@@ -1,11 +1,14 @@
 import React from 'react'
 import {Tabs} from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
+import { StyleSheet, Text, View } from 'react-native'
 
-const TabLayout = () => { // Temporary tab bar atm
-  return (                // may use React Navigation once functionality is complete
+// temporary tab bar atm but is very functional. I maaaay do React Navigation down the line but shouldn't be necessary
+// considering functionality comes first. A music player should also be here eventually.
+
+const TabLayout = () => {
+  return (                
     <Tabs>
-
       <Tabs.Screen 
       name="list" 
       options={({title: "To-Do", tabBarIcon: () => (
