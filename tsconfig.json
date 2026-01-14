@@ -1,4 +1,9 @@
 {
   "compilerOptions": {},
-  "extends": "expo/tsconfig.base"
+  "extends": "expo/tsconfig.base",
+  "paths": { //remove if theme isn't needed
+    "@/*": [
+      "./src/*"
+    ]
+  }
 }
