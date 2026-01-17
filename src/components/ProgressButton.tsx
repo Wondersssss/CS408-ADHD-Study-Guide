@@ -1,4 +1,4 @@
-import { Pause } from "lucide-react-native"
+import { Pause, Play } from "lucide-react-native"
 import { Pressable, StyleSheet, View } from "react-native"
 import Animated, { Easing, useAnimatedProps, useDerivedValue, withTiming } from "react-native-reanimated"
 import Svg, { Circle } from "react-native-svg"
@@ -72,17 +72,31 @@ export default function ProgressButton({
                         transform: [{scale: pressed ? 0.96 : 1}]
                     }
                 ]}
-                >
-                    {running ? (
-                        <Pause color="#121217"/> // VIDEO AT 45:48  
-                    ) : (
-
-                    )}
+            >
+                {running ? (
+                    <Pause color="#121217" size={28} />
+                ) : (
+                    <Play color="#121217" size={28}/>
+                )}
             </Pressable>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-
+    btn: {
+        width: 150,
+        height: 150,
+        borderRadius: 75,
+        alignItems: "center",
+        justifyContent: "center",
+        shadowColor: '#000',
+        shadowOpacity: 0.12,
+        shadowRadius: 10,
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        elevation: 6
+    }
 })
