@@ -18,16 +18,19 @@ export default function timer () {
   )
 }
 
+const quoteList = [
+    "Why don't you time yourself? No pressure though.",
+    "Are ya ready to get studying? You got this!! Absolutely!",
+    "Don't feel bad if you're not up to it, breaks are good!",
+    "Remember to not overwork yourself!",
+    "I believe in you :)",
+    "I think you're super smart, so you definitely got this >:)",
+    "I'm proud of your journey."
+]
+
+const encouragement = quoteList[randomNumberGenerator(quoteList)]
+
 function AppInner() {
-    const quoteList = [
-        "Why don't you time yourself? No pressure though.",
-        "Are ya ready to get studying? You got this!! Absolutely!",
-        "Don't feel bad if you're not up to it, breaks are good!",
-        "Remember to not overwork yourself!",
-        "I believe in you :)",
-        "I think you're super smart, so you definitely got this >:)",
-        "I'm proud of your journey."
-    ]
 
   const {theme, toggle} = useTheme()
   const [durationSec, setDurationSec] = useState(2 * 3600)
@@ -52,7 +55,7 @@ function AppInner() {
 
         <View style={styles.header}>
           <Text style={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}>
-            {quoteList[randomNumberGenerator(quoteList)]}
+            {encouragement}
           </Text>
         </View>
         <View style={styles.timerWrap}>
@@ -93,10 +96,10 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: 8,
-    paddingBottom: 4,
+    paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: "center"
   },
   title: {
     fontSize: 10,
