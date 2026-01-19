@@ -1,7 +1,6 @@
 import React from 'react'
 import {Tabs} from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-import { StyleSheet, Text, View } from 'react-native'
 
 // temporary tab bar atm but is very functional. I maaaay do React Navigation down the line but shouldn't be necessary
 // considering functionality comes first. A music player should also be here eventually.

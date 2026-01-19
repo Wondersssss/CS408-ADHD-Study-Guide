@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import ProgressButton from "../../src/components/ProgressButton";
 import Controls from "../../src/components/TimerControls";
+import { randomNumberGenerator } from "../../src/utils/randomNumberGenerator";
 
 export default function timer () {
   return (
@@ -18,8 +19,20 @@ export default function timer () {
 }
 
 function AppInner() {
+    const quoteList = [
+        "Why don't you time yourself? No pressure though.",
+        "Are ya ready to get studying? You got this!! Absolutely!",
+        "Don't feel bad if you're not up to it, breaks are good!",
+        "Remember to not overwork yourself!",
+        "I believe in you :)",
+        "I think you're super smart, so you definitely got this >:)",
+        "I'm proud of your journey."
+    ]
+
   const {theme, toggle} = useTheme()
-  const [durationSec, setDurationSec] = useState(25 * 60)
+  const [durationSec, setDurationSec] = useState(2 * 3600)
+
+  //BASE TIMER  
   const {secondsLeft, running, progress, start, pause, reset} = usePomodoro({
     durationSec,
     onFinish: () => {}
@@ -38,11 +51,10 @@ function AppInner() {
         <StatusBar style={theme.isDark ? 'light' : 'dark'} />
 
         <View style={styles.header}>
-          <Text style={[styles.title, {color: theme.text}]}>
-             Time yourself, You can do this!!
+          <Text style={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}>
+            {quoteList[randomNumberGenerator(quoteList)]}
           </Text>
         </View>
-
         <View style={styles.timerWrap}>
           <Text style={[styles.time, {color: theme.textSoft}]}>{time}</Text>
 
@@ -55,6 +67,9 @@ function AppInner() {
           onPress={() => (running ? pause() : start())}
           onLongPress={reset}
           />
+          <Text style={[styles.title, {color: theme.text, fontSize: 16}]}>Until break:</Text>
+          <Text style={[styles.time, {color: theme.textSoft}]}>3</Text>
+
           <Controls visible={running} onPause={pause} onStop={reset} />
         </View>
 
