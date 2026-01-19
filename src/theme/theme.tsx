@@ -52,7 +52,7 @@ const ThemeCtx = createContext<{theme: Theme; toggle: () => void}>({
 })
 
 export const ThemeProvider: React.FC<{children: React.ReactNode}> = ({
-    children,
+    children
 }) => {
     const prefersDark = Appearance.getColorScheme() === "dark"
     const [isDark, setIsDark] = useState(prefersDark)
