@@ -4,11 +4,16 @@ import {StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
-import { useState } from "react";
+import {useContext, useState } from "react";
+import TimeProvider, { TimeContext } from "../../src/hooks/TimeProvider";
+
 export default function options () {
+
   return (
     <ThemeProvider>
-      <AppInner/>
+      <TimeProvider>
+        <AppInner/>
+      </TimeProvider>
     </ThemeProvider>
   )
 }
@@ -16,8 +21,7 @@ export default function options () {
 function AppInner() {
   const {theme, toggle} = useTheme()
 
-  const [workLength, setWorkLength] = useState(40)
-  const [breakLength, setBreakLength] = useState(10)
+  const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -28,7 +32,7 @@ function AppInner() {
       </View>
       <View style={styles.optionArea}>
         <Text style={styles.labels}>How long do you want to work before a break?</Text>
-        <Text style={styles.textOnTheSide}>{workLength}</Text>
+        <Text style={styles.textOnTheSide}>{workTime}</Text>
         <Slider
           style={{width: 200, height: 40}}
           step={1}
@@ -36,13 +40,13 @@ function AppInner() {
           maximumValue={60}
           minimumTrackTintColor={themes.common.red}
           maximumTrackTintColor={themes.common.red}
-          value={workLength && +workLength.toFixed(0)}
-          onValueChange={setWorkLength}
+          value={workTime && +workTime.toFixed(0)}
+          onValueChange={setWorkTime}
         />
       </View>
       <View style={styles.optionArea}>
         <Text style={styles.labels}>How long do you want your break?</Text>
-        <Text style={styles.textOnTheSide}>{breakLength}</Text>
+        <Text style={styles.textOnTheSide}>{breakTime}</Text>
         <Slider
           style={{width: 200, height: 40}}
           step={1}
@@ -50,8 +54,8 @@ function AppInner() {
           maximumValue={30}
           minimumTrackTintColor={themes.common.green}
           maximumTrackTintColor={themes.common.green}
-          value={breakLength && +breakLength.toFixed(0)}
-          onValueChange={setBreakLength}
+          value={breakTime && +breakTime.toFixed(0)}
+          onValueChange={setBreakTime}
         />
       </View>
     </SafeAreaView>

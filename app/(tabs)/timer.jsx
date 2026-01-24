@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { ThemeProvider, useTheme, themes } from "../../src/theme/theme";
 import usePomodoro from "../../src/hooks/usePomodoro";
 import { formatMMSS } from "../../src/utils/format";
@@ -9,11 +9,15 @@ import { StatusBar } from "expo-status-bar";
 import ProgressButton from "../../src/components/ProgressButton";
 import Controls from "../../src/components/TimerControls";
 import { randomNumberGenerator } from "../../src/utils/randomNumberGenerator";
+import BreakControls from "../../src/components/BreakStopButton";
+import TimeProvider, { TimeContext } from "../../src/hooks/TimeProvider";
 
 export default function timer () {
   return (
     <ThemeProvider>
-      <AppInner />
+      <TimeProvider>
+        <AppInner />
+      </TimeProvider>
     </ThemeProvider>
   )
 }
@@ -34,6 +38,7 @@ function AppInner() {
 
   const {theme, toggle} = useTheme()
   const [durationSec, setDurationSec] = useState(2 * 3600)
+  const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
 
   //BASE TIMER  
   const {secondsLeft, running, progress, start, pause, reset} = usePomodoro({
@@ -74,6 +79,7 @@ function AppInner() {
           <Text style={[styles.time, {color: theme.textSoft}]}>3</Text>
 
           <Controls visible={running} onPause={pause} onStop={reset} />
+          <BreakControls visible={onBreak} onBreakStop={breakStop}/>
         </View>
 
         <View style={styles.footer}>

@@ -2,18 +2,19 @@ import {View, StyleSheet, Pressable, Text} from "react-native"
 import { useTheme } from "../theme/theme"
 type Props = {
     visible: boolean
-    onPause: () => void
-    onStop: () => void
+    onBreakStop: () => void 
 }
 
-const Controls: React.FC<Props> = ({visible, onPause, onStop}) => {
+// just a copy of TimerControls but only visible once break is initiated
+
+const BreakControls: React.FC<Props> = ({visible, onBreakStop}) => {
     const {theme} = useTheme()
     if (!visible) return null
 
     return  (
         <View style={styles.row}>
             <Pressable
-            onPress={onPause}
+            onPress={onBreakStop}
             style={({pressed}) => [
                 styles.btn,
                 {
@@ -22,25 +23,11 @@ const Controls: React.FC<Props> = ({visible, onPause, onStop}) => {
                 }
             ]}
             >
-                <Text style={[styles.label, {color: "#121217"}]}>Pause</Text>
-            </Pressable>
-
-            <Pressable
-            onPress={onStop}
-            style={({pressed}) => [
-                styles.btn,
-                {
-                    backgroundColor: theme.card,
-                    opacity: pressed ? 0.9 : 1
-                }
-            ]}
-            >
-                <Text style={[styles.label, {color: "#121217"}]}>Stop</Text>
+                <Text style={[styles.label, {color: "#121217"}]}>End Break</Text>
             </Pressable>
         </View>
     )
 }
-
 
 const styles = StyleSheet.create({
     row: {
@@ -65,4 +52,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Controls
+export default BreakControls
