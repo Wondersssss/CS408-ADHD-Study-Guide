@@ -4,11 +4,14 @@ import React, { useCallback, useEffect, useState } from 'react'
 type Options = {
     durationSec: number
     onFinish?: () => void
-
+    // workTime: number
+    // breakTime: number
+    // onStateChange?: () => void
 }
 export default function usePomodoro({durationSec, onFinish}: Options) {
     const [secondsLeft, setSecondsLeft] = useState<number>(durationSec)
     const [running, setRunning] = useState<boolean>(false)
+    const [onBreak, setOnBreak] = useState<boolean>(false)
 
     const progress = secondsLeft <= 0 ? 1 : 1 - secondsLeft / durationSec
 

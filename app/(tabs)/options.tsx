@@ -1,20 +1,17 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemeProvider, themes, useTheme } from "../../src/theme/theme";
-import {StyleSheet, Text, View } from "react-native";
+import {StyleSheet, Switch, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
 import {useContext, useState } from "react";
 import TimeProvider, { TimeContext } from "../../src/hooks/TimeProvider";
+import EncouragementProvider, { EncouragementContext } from "../../src/hooks/EncouragementProvider";
 
 export default function options () {
 
   return (
-    <ThemeProvider>
-      <TimeProvider>
-        <AppInner/>
-      </TimeProvider>
-    </ThemeProvider>
+    <AppInner/>
   )
 }
 
@@ -22,6 +19,8 @@ function AppInner() {
   const {theme, toggle} = useTheme()
 
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
+  const {encouragement, setEncouragement} = useContext(EncouragementContext)
+  const toggleSwitch = () => setEncouragement(previousState => !previousState)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -56,6 +55,17 @@ function AppInner() {
           maximumTrackTintColor={themes.common.green}
           value={breakTime && +breakTime.toFixed(0)}
           onValueChange={setBreakTime}
+        />
+      </View>
+      <View style={styles.optionArea}>
+        <Text style={styles.labels}>Do you want encouragement when using the timer?</Text>
+        <Text style={styles.textOnTheSide}>{encouragement}</Text>
+        <Switch
+          trackColor={{false: '#767577', true: themes.common.green}}
+          thumbColor={'#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={encouragement}
         />
       </View>
     </SafeAreaView>

@@ -9,16 +9,14 @@ import { StatusBar } from "expo-status-bar";
 import ProgressButton from "../../src/components/ProgressButton";
 import Controls from "../../src/components/TimerControls";
 import { randomNumberGenerator } from "../../src/utils/randomNumberGenerator";
-import BreakControls from "../../src/components/BreakStopButton";
+import BreakControls from "../../src/components/BreakControls";
 import TimeProvider, { TimeContext } from "../../src/hooks/TimeProvider";
+import EncouragementProvider, { EncouragementContext } from "../../src/hooks/EncouragementProvider";
+import HideableView from "../../src/components/HideableView";
 
 export default function timer () {
   return (
-    <ThemeProvider>
-      <TimeProvider>
-        <AppInner />
-      </TimeProvider>
-    </ThemeProvider>
+  <AppInner />
   )
 }
 
@@ -37,8 +35,9 @@ const encouragement = quoteList[randomNumberGenerator(quoteList)]
 function AppInner() {
 
   const {theme, toggle} = useTheme()
-  const [durationSec, setDurationSec] = useState(2 * 3600)
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
+  const {encouraged, setEncouragement} = useContext(EncouragementContext)
+  const [durationSec, setDurationSec] = useState(workTime * 60)
 
   //BASE TIMER  
   const {secondsLeft, running, progress, start, pause, reset} = usePomodoro({
@@ -58,11 +57,13 @@ function AppInner() {
       <SafeAreaView style={styles.safe}>
         <StatusBar style={theme.isDark ? 'light' : 'dark'} />
 
-        <View style={styles.header}>
-          <Text style={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}>
-            {encouragement}
-          </Text>
-        </View>
+        <HideableView
+        visible={encouraged}
+        inputText={encouragement}
+        style={styles.header}
+        textStyle={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}
+        />
+
         <View style={styles.timerWrap}>
           <Text style={[styles.time, {color: theme.textSoft}]}>{time}</Text>
 
@@ -76,10 +77,12 @@ function AppInner() {
           onLongPress={reset}
           />
           <Text style={[styles.title, {color: theme.text, fontSize: 16}]}>Until break:</Text>
-          <Text style={[styles.time, {color: theme.textSoft}]}>3</Text>
+          <Text style={[styles.time, {color: theme.textSoft}]}>{workTime}</Text>
+
+
 
           <Controls visible={running} onPause={pause} onStop={reset} />
-          <BreakControls visible={onBreak} onBreakStop={breakStop}/>
+          {/* <BreakControls visible={onBreak} onBreakStop={breakStop}/>*/}
         </View>
 
         <View style={styles.footer}>

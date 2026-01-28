@@ -1,11 +1,20 @@
 import React from 'react'
 import {Stack} from 'expo-router'
+import { ThemeProvider } from '../src/theme/theme'
+import TimeProvider from '../src/hooks/TimeProvider'
+import EncouragementProvider from '../src/hooks/EncouragementProvider'
 
 const RootLayout = () => {
   return (
-    <Stack>
-    <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-    </Stack>
+  <ThemeProvider>
+    <TimeProvider>
+      <EncouragementProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
+        </Stack>
+      </EncouragementProvider>
+    </TimeProvider>
+  </ThemeProvider>
   )
 }
 

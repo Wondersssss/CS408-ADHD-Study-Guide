@@ -3,7 +3,7 @@ import { createContext, useState } from "react"
 export const EncouragementContext = createContext(null)
 
 const EncouragementProvider = ({children}) => {
-    const [encouragement, setEncouragement] = useState(true)
+    const [encouragement, setEncouragement] = useState<boolean>(true)
 
     return (
         <EncouragementContext.Provider value={{encouragement, setEncouragement}}>
