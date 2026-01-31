@@ -1,56 +1,83 @@
-import {clamp} from '../utils/format'
+import { clamp } from '../utils/format'
 import React, { useCallback, useEffect, useState } from 'react'
 
 type Options = {
     durationSec: number
     onFinish?: () => void
-    // workTime: number
-    // breakTime: number
-    // onStateChange?: () => void
+    workTime: number
+    breakTime: number
+    onStateChange?: () => void
 }
-export default function usePomodoro({durationSec, onFinish}: Options) {
-    const [secondsLeft, setSecondsLeft] = useState<number>(durationSec)
-    const [running, setRunning] = useState<boolean>(false)
-    const [onBreak, setOnBreak] = useState<boolean>(false)
 
-    const progress = secondsLeft <= 0 ? 1 : 1 - secondsLeft / durationSec
+export default function usePomodoro({ durationSec, onFinish, workTime, breakTime, onStateChange }: Options) {
+    const [totalSecondsLeft, setTotalSecondsLeft] = useState<number>(durationSec)
+    const [stateTimeLeft, setStateTimeLeft] = useState<number>(workTime)
+    const [running, setRunning] = useState<boolean>(false)
+    const [mode, setMode] = useState<string>('work')
+
+    const progress = totalSecondsLeft <= 0 ? 1 : 1 - totalSecondsLeft / durationSec
 
     useEffect(() => {
-        let id: ReturnType<typeof setInterval> | null = null
+        let idTotal: ReturnType<typeof setInterval> | null = null
+        let idStates: ReturnType<typeof setInterval> | null = null
 
-        if(running) {
-            id = setInterval(() => {
-                setSecondsLeft((s) => {
-                    const next = clamp(s - 1, 0, durationSec)
-                    if(next === 0) {
-                        if (id) clearInterval(id)
+        if (running) {
+            idTotal = setInterval(() => {
+                setTotalSecondsLeft((s) => {
+                    const totalNext = clamp(s - 1, 0, durationSec)
+                    if (totalNext === 0) {
+                        if (idTotal) clearInterval(idTotal)
                         setRunning(false)
                         onFinish?.()
                     }
-                    return next
+                    return totalNext
+                })
+            }, 1000)
+
+            idStates = setInterval(() => {
+                setStateTimeLeft((ss) => {
+                    const stateNext = clamp(ss - 1, 0, mode === "work" ? workTime : breakTime)
+                    
+                    if (stateNext === 0) {
+                        const newMode = mode === "work" ? "break" : "work"
+                        setMode(newMode)
+                        onStateChange?.()
+                        return newMode === "work" ? workTime : breakTime
+                    }
+                    
+                    return stateNext
                 })
             }, 1000)
         }
+        
         return () => {
-            if (id) clearInterval(id)
+            if (idTotal) clearInterval(idTotal)
+            if (idStates) clearInterval(idStates)
         }
-    }, [running, durationSec, onFinish])
+    }, [running, durationSec, onFinish, workTime, breakTime, mode, onStateChange])
 
     const start = useCallback(() => {
-        if (secondsLeft === 0) setSecondsLeft(durationSec)
+        if (totalSecondsLeft === 0) {
+            setTotalSecondsLeft(durationSec)
+            setStateTimeLeft(mode === "work" ? workTime : breakTime)
+        }
         setRunning(true)
-    }, [durationSec, secondsLeft])
+    }, [durationSec, totalSecondsLeft, workTime, breakTime, mode])
 
     const pause = useCallback(() => setRunning(false), [])
+    
     const reset = useCallback(() => {
         setRunning(false)
-        setSecondsLeft(durationSec)
-    }, [durationSec])
+        setTotalSecondsLeft(durationSec)
+        setStateTimeLeft(mode === "work" ? workTime : breakTime)
+        setMode('work') 
+    }, [durationSec, mode, workTime, breakTime])
 
     useEffect(() => {
-        setSecondsLeft(durationSec)
+        setTotalSecondsLeft(durationSec)
+        setStateTimeLeft(mode === "work" ? workTime : breakTime)
         setRunning(false)
-    }, [durationSec])
+    }, [durationSec, workTime, breakTime, mode])
 
-    return {secondsLeft, running, progress, start, pause, reset}
+    return { totalSecondsLeft, stateTimeLeft, mode, running, progress, start, pause, reset }
 }
