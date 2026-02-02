@@ -1,6 +1,5 @@
-import { useAudioPlayer } from 'expo-audio'
 import { clamp } from '../utils/format'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 type Options = {
     durationSec: number
