@@ -12,12 +12,8 @@ import { randomNumberGenerator } from "../../src/utils/randomNumberGenerator";
 import { TimeContext } from "../../src/hooks/TimeProvider";
 import { EncouragementContext } from "../../src/hooks/EncouragementProvider";
 import HideableView from "../../src/components/HideableView";
-
-export default function timer () {
-  return (
-  <AppInner/>
-  )
-}
+import { useAudioPlayer } from "expo-audio";
+import { useSoundEffects } from "../../src/hooks/useSoundEffects";
 
 const quoteList = [
     "Why don't you time yourself? No pressure though.",
@@ -36,20 +32,26 @@ const encouragement = quoteList[randomNumberGenerator(quoteList)]
 const BREAK_TEXT = "Work"
 const WORK_TEXT = "Break"
 
-function AppInner() {
+const { playSound } = useSoundEffects()
 
+export default function timer () {
   const {theme, toggle} = useTheme()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
   const {encouraged, setEncouragement} = useContext(EncouragementContext)
-  const [durationSec, setDurationSec] = useState(140 * 60)
+  const [durationSec, setDurationSec] = useState(40 * 60)
+
+
+
 
   //BASE TIMER  
   const {totalSecondsLeft, running, progress, start, pause, reset, mode, stateTimeLeft} = usePomodoro({
     durationSec,
-    onFinish: () => {}, // TODO: Add confetti here
+    onFinish: () => {playSound("timerWin")}, // TODO: Add confetti here
     workTime,
     breakTime,
-    onStateChange: () => {} // TODO: Add encoruagement here
+    onStateChange: () => {
+      if (mode === "work") playSound("workWin", 0.5)
+    }
   })
 
   const time = useMemo(() => formatMMSS(totalSecondsLeft), [totalSecondsLeft])
@@ -99,7 +101,7 @@ function AppInner() {
       </SafeAreaView>
     </LinearGradient>
   )
-}
+}  
 
 const styles = StyleSheet.create({
   container: {

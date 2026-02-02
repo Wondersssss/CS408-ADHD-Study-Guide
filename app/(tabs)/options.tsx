@@ -35,7 +35,7 @@ function AppInner() {
         <Slider
           style={{width: 200, height: 40}}
           step={1}
-          minimumValue={20}
+          minimumValue={5} //TODO: Change back to 20, just a debug
           maximumValue={60}
           minimumTrackTintColor={themes.common.red}
           maximumTrackTintColor={themes.common.red}
