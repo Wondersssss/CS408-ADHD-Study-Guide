@@ -1,7 +1,15 @@
-import { useCallback } from "react";
-import { useAudioPlayer } from "expo-audio";
+import { useCallback, useEffect } from "react";
+import { setAudioModeAsync, useAudioPlayer } from "expo-audio";
 
 type SoundKey = "workWin" | "timerWin" | "soundFail";
+
+useEffect(() => {
+  (async () => {
+    await setAudioModeAsync({
+      playsInSilentMode: true,
+    });
+  })();
+}, []);
 
 export function useSoundEffects(defaultVolume = 1) {
   const workWin = useAudioPlayer(require("../../sounds/workWin.mp3"));

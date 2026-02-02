@@ -1,12 +1,12 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ThemeProvider, themes, useTheme } from "../../src/theme/theme";
+import { themes, useTheme } from "../../src/theme/theme";
 import {StyleSheet, Switch, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
-import {useContext, useState } from "react";
-import TimeProvider, { TimeContext } from "../../src/hooks/TimeProvider";
-import EncouragementProvider, { EncouragementContext } from "../../src/hooks/EncouragementProvider";
+import {useContext} from "react";
+import { TimeContext } from "../../src/hooks/TimeProvider";
+import { EncouragementContext } from "../../src/hooks/EncouragementProvider";
 
 export default function options () {
 
@@ -17,7 +17,6 @@ export default function options () {
 
 function AppInner() {
   const {theme, toggle} = useTheme()
-
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
   const {encouragement, setEncouragement} = useContext(EncouragementContext)
   const toggleSwitch = () => setEncouragement(previousState => !previousState)

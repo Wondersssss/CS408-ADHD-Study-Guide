@@ -3,7 +3,7 @@ import { useTheme, themes } from "../../src/theme/theme";
 import usePomodoro from "../../src/hooks/usePomodoro";
 import { formatMMSS } from "../../src/utils/format";
 import { LinearGradient } from "expo-linear-gradient";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import ProgressButton from "../../src/components/ProgressButton";
@@ -12,8 +12,8 @@ import { randomNumberGenerator } from "../../src/utils/randomNumberGenerator";
 import { TimeContext } from "../../src/hooks/TimeProvider";
 import { EncouragementContext } from "../../src/hooks/EncouragementProvider";
 import HideableView from "../../src/components/HideableView";
-import { useAudioPlayer } from "expo-audio";
 import { useSoundEffects } from "../../src/hooks/useSoundEffects";
+import Confetti from "react-confetti";
 
 const quoteList = [
     "Why don't you time yourself? No pressure though.",
@@ -36,17 +36,22 @@ const { playSound } = useSoundEffects()
 
 export default function timer () {
   const {theme, toggle} = useTheme()
+  const {width, height} = useWindowDimensions()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
   const {encouraged, setEncouragement} = useContext(EncouragementContext)
-  const [durationSec, setDurationSec] = useState(40 * 60)
+  const [durationSec, setDurationSec] = useState(1)
 
+  // useEffect(() => {
+  //   setWorkTime(workTime * 60)
+  //   setBreakTime(breakTime * 60)
+  //   setDurationSec(durationSec * 60)
+  // }, [setBreakTime, setWorkTime, setDurationSec])
 
-
-
-  //BASE TIMER  
   const {totalSecondsLeft, running, progress, start, pause, reset, mode, stateTimeLeft} = usePomodoro({
     durationSec,
-    onFinish: () => {playSound("timerWin")}, // TODO: Add confetti here
+    onFinish: () => {
+      playSound("timerWin")
+    }, // TODO: Add confetti here
     workTime,
     breakTime,
     onStateChange: () => {
@@ -66,6 +71,10 @@ export default function timer () {
     >
       <SafeAreaView style={styles.safe}>
         <StatusBar style={theme.isDark ? 'light' : 'dark'} />
+
+        <Confetti
+        width={width}
+        height={height}/>
 
         <HideableView
         visible={encouraged}
