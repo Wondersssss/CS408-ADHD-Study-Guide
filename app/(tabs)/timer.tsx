@@ -12,7 +12,6 @@ import { randomNumberGenerator } from "../../src/utils/randomNumberGenerator";
 import { TimeContext } from "../../src/hooks/TimeProvider";
 import { EncouragementContext } from "../../src/hooks/EncouragementProvider";
 import HideableView from "../../src/components/HideableView";
-import { useAudioPlayer } from "expo-audio";
 import { useSoundEffects } from "../../src/hooks/useSoundEffects";
 
 const quoteList = [
@@ -32,10 +31,9 @@ const encouragement = quoteList[randomNumberGenerator(quoteList)]
 const BREAK_TEXT = "Work"
 const WORK_TEXT = "Break"
 
-const { playSound } = useSoundEffects()
-
 export default function timer () {
   const {theme, toggle} = useTheme()
+  const { playSound } = useSoundEffects()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
   const {encouraged, setEncouragement} = useContext(EncouragementContext)
   const [durationSec, setDurationSec] = useState(40 * 60)
