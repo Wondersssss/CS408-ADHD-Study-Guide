@@ -13,7 +13,7 @@ import { TimeContext } from "../../src/hooks/TimeProvider";
 import { EncouragementContext } from "../../src/hooks/EncouragementProvider";
 import HideableView from "../../src/components/HideableView";
 import { useSoundEffects } from "../../src/hooks/useSoundEffects";
-import Confetti from "react-confetti";
+import Confetti from "../../src/components/Confetti";
 
 const quoteList = [
     "Why don't you time yourself? No pressure though.",
@@ -36,10 +36,10 @@ const { playSound } = useSoundEffects()
 
 export default function timer () {
   const {theme, toggle} = useTheme()
-  const {width, height} = useWindowDimensions()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
   const {encouraged, setEncouragement} = useContext(EncouragementContext)
   const [durationSec, setDurationSec] = useState(1)
+  const [confetti, setConfetti] = useState(false)
 
   // useEffect(() => {
   //   setWorkTime(workTime * 60)
@@ -51,7 +51,11 @@ export default function timer () {
     durationSec,
     onFinish: () => {
       playSound("timerWin")
-    }, // TODO: Add confetti here
+      setConfetti(true)
+      setTimeout(() => {
+        setConfetti(false)
+      }, 5000)
+    }, 
     workTime,
     breakTime,
     onStateChange: () => {
@@ -62,19 +66,23 @@ export default function timer () {
   const time = useMemo(() => formatMMSS(totalSecondsLeft), [totalSecondsLeft])
   const stateTime = useMemo(() => formatMMSS(stateTimeLeft), [stateTimeLeft])
 
+  if (confetti && true) {
+    return (
+      <Confetti visible={true}/>
+    )
+  }
+
   return (
+    
     <LinearGradient
     colors={theme.bgGradient}
     start={{x: 0.2, y: 0.1}}
     end={{x: 0.9, y: 1}}
     style={[styles.container, {backgroundColor: theme.bg}]}
     >
+
       <SafeAreaView style={styles.safe}>
         <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-
-        <Confetti
-        width={width}
-        height={height}/>
 
         <HideableView
         visible={encouraged}
