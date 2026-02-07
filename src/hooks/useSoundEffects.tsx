@@ -23,11 +23,11 @@ export function useSoundEffects(defaultVolume = 1) {
       const player =
         sound === "workWin" ? workWin :
         sound === "timerWin" ? timerWin :
-        soundFail;
+        soundFail
 
       player.volume = v;
       player.seekTo(0)
-      player.play();
+      player.play()
     },
     [workWin, timerWin, soundFail, defaultVolume]
   );

@@ -18,7 +18,7 @@ export default function options () {
 function AppInner() {
   const {theme, toggle} = useTheme()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
-  const {encouragement, setEncouragement} = useContext(EncouragementContext)
+  const {encouraged, setEncouragement} = useContext(EncouragementContext)
   const toggleSwitch = () => setEncouragement(previousState => !previousState)
 
   return (
@@ -34,7 +34,7 @@ function AppInner() {
         <Slider
           style={{width: 200, height: 40}}
           step={1}
-          minimumValue={5} //TODO: Change back to 20, just a debug
+          minimumValue={20}
           maximumValue={60}
           minimumTrackTintColor={themes.common.red}
           maximumTrackTintColor={themes.common.red}
@@ -58,13 +58,12 @@ function AppInner() {
       </View>
       <View style={styles.optionArea}>
         <Text style={styles.labels}>Do you want encouragement when using the timer?</Text>
-        <Text style={styles.textOnTheSide}>{encouragement}</Text>
         <Switch
           trackColor={{false: '#767577', true: themes.common.green}}
           thumbColor={'#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={toggleSwitch}
-          value={encouragement}
+          value={encouraged}
         />
       </View>
     </SafeAreaView>
