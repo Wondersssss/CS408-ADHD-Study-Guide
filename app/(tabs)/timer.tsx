@@ -33,10 +33,9 @@ const encouragement = quoteList[randomNumberGenerator(quoteList)]
 const BREAK_TEXT = "Work"
 const WORK_TEXT = "Break"
 
-const { playSound } = useSoundEffects()
-
 export default function timer () {
   const {theme, toggle} = useTheme()
+  const { playSound } = useSoundEffects()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
   const {encouraged, setEncouragement} = useContext(EncouragementContext)
   const [durationSec, setDurationSec] = useState<number>(0)
