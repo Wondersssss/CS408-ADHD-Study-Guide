@@ -1,37 +1,66 @@
 import { FlatList, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
-import Checkbox from 'expo-checkbox'
+import ToDoItem from '../../src/components/toDoItem'
+
+type toDoType = {
+  id: number
+  title: string
+  time: string
+  isDone: boolean
+}
 
 const AssignmentList = () => {
   const toDoData = [
     {
       id: 1,
       title: "Todo 1",
+      time: '17/02/2021',
       isDone: false
     },
     {
       id: 2,
       title: "Todo 2",
+      time: '17/02/2021',
       isDone: false
     },
     {
       id: 3,
       title: "Todo 3",
+      time: '17/02/2021',
       isDone: false
     },
     {
       id: 4,
       title: "Todo 4",
+      time: '17/02/2021',
       isDone: false
     },
     {
       id: 5,
       title: "Todo 5",
+      time: '17/02/2021',
       isDone: false
     }
   ]
+
+  const [todos, setToDos] = useState<toDoType[]>(toDoData)
+  const [toDoText, setToDoText] = useState<string>('')
+  const [toDoTime, setToDoTime] = useState<string>('')
+
+  const addToDo = () => {
+    const newToDo = {
+      id: Math.random(),
+      title: toDoText,
+      isDone: false
+    }
+    todos.push(newToDo)
+    setToDos(todos)
+    setToDoText('')
+  }
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -46,24 +75,17 @@ const AssignmentList = () => {
       </View>
 
       <FlatList
-      data={toDoData}
+      data={[...todos].reverse()}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({item}) => (
-        <View style={styles.toDoContainer}>
-          <View style={styles.toDoInfoContainer}>
-            <Checkbox value={item.isDone}/>
-            <Text style={styles.toDoText}>{item.title}</Text>
-          </View>
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name='trash' size={24} color={'red'}/>
-          </TouchableOpacity>
-        </View>
+        <ToDoItem todo={item} />
       )}
       />
 
-      <KeyboardAvoidingView style={styles.footer} behavior='padding'>
-        <TextInput placeholder='Add new' style={styles.newToDoInput}/>
-        <TouchableOpacity onPress={() => {}} style={styles.addButton}>
+      <KeyboardAvoidingView style={styles.footer} behavior='padding' keyboardVerticalOffset={100}>
+        <TextInput placeholder='Task' value={toDoText} style={styles.newToDoInput} onChangeText={(text) => {setToDoText(text)}}/>
+        <TextInput placeholder='Due Date' style={styles.newToDoInput}/>
+        <TouchableOpacity onPress={() => {addToDo()}} style={styles.addButton}>
           <Ionicons name='add' size={34} color={'#fff'} />
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -96,23 +118,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333'
   },
-  toDoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 20
-  },
-  toDoInfoContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    alignItems: 'center'
-  },
-  toDoText: {
-    fontSize: 16,
-    color: '#333',
-  },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -122,6 +127,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     padding: 16,
+    margin: 10,
     borderRadius: 10,
     fontSize: 16,
     color: '#333'
