@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import Checkbox from 'expo-checkbox'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { dayChecker } from '../../src/utils/dayChecker'
 
 type toDoType = {
   id: number
@@ -14,39 +15,6 @@ type toDoType = {
 }
 
 const AssignmentList = () => {
-  // const toDoData = [
-  //   {
-  //     id: 1,
-  //     title: "Todo 1",
-  //     time: '17/02/2021',
-  //     isDone: false
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Todo 2",
-  //     time: '17/02/2021',
-  //     isDone: false
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Todo 3",
-  //     time: '17/02/2021',
-  //     isDone: false
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Todo 4",
-  //     time: '17/02/2021',
-  //     isDone: false
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Todo 5",
-  //     time: '17/02/2021',
-  //     isDone: false
-  //   }
-  // ]
-
   const [todos, setToDos] = useState<toDoType[]>([])
   const [toDoText, setToDoText] = useState<string>('')
   const [toDoTime, setToDoTime] = useState<string>('')
@@ -160,39 +128,27 @@ const AssignmentList = () => {
   }, [searchQuery])
 
   const viewColor = (todo: toDoType) => {
-    const currentDate = Date.now()
-    const toDoDate = Date.parse(todo.time)
-    console.log("currentTime", currentDate)
-    console.log("toDoDate:", toDoDate)
-
-    let difference = toDoDate - currentDate
-    console.log("difference:", difference)
-
-    if (difference < 86400000) {
-      return '#c41e1e'
+    if (!todo.isDone) {
+      if (dayChecker(todo.time) <= 3) {
+        if (dayChecker(todo.time) <= 1) {
+          return '#f17629'
+        }
+        return '#c41e1e'
+      }
     }
-    else if (difference < 259200000) {
-      return '#7f811e'
-    }
-    else {
-      return '#fff'
-    }
+    return '#fff'
   }
 
   const textColor = (todo: toDoType) => {
-    const currentDate = Date.now()
-    const toDoDate = Date.parse(todo.time)
-    console.log("toDoDate:", toDoDate)
-
-    let difference = toDoDate - currentDate
-    console.log("difference:", difference)
-
-    if (difference < 86400000) {
-      return '#ffffff'
+    if (!todo.isDone) {
+      if (dayChecker(todo.time) < 3) {
+        return '#c41e1e'
+      }
+      else if (true) {
+        return '#babd1b'
+      }
     }
-    else {
-      return '#000000'
-    }
+    return '#fff'
   }
 
   const ToDoItem = ({
@@ -209,7 +165,7 @@ const AssignmentList = () => {
           <Checkbox value={todo.isDone} color={todo.isDone ? '#4630EB' : undefined} onValueChange={() => {handleTodo(todo.id)}}/>
           <Text style={[styles.toDoText, {color: textColor(todo)}]}>{todo.title}</Text>
           </View>
-          <Text style={[styles.toDoText, {fontWeight: '700'}]}>{todo.time}</Text>
+          <Text style={[styles.toDoText, {fontWeight: '700', color: textColor(todo), marginRight: 20}]}>{todo.time}</Text>
           <TouchableOpacity onPress={() => {deleteToDo(todo.id)}}>
           <Ionicons name='trash' size={24} color={'red'}/>
           </TouchableOpacity>
@@ -219,11 +175,6 @@ const AssignmentList = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => {}}>
-          <Ionicons name='folder' size={36} color={"#333"}/> 
-        </TouchableOpacity>
-      </View>
 
       <View style={styles.searchBar}>
         <Ionicons name='search'size={24} color={'#333'}/> 
@@ -272,9 +223,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: '#f5f5f5'
   },
-    header: {
-    marginBottom: 20
-  },
   searchBar: {
     flexDirection: "row",
     backgroundColor: "#ffff",
@@ -317,7 +265,9 @@ const styles = StyleSheet.create({
   },
   toDoInfoContainer: {
     flexDirection: 'row',
+    flexShrink: 1,
     gap: 10,
+    marginRight: 60,
     alignItems: 'center'
   },
   toDoText: {

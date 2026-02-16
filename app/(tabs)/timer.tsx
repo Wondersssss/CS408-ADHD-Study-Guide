@@ -9,11 +9,13 @@ import { StatusBar } from "expo-status-bar";
 import ProgressButton from "../../src/components/ProgressButton";
 import Controls from "../../src/components/TimerControls";
 import { randomNumberGenerator } from "../../src/utils/randomNumberGenerator";
-import { TimeContext } from "../../src/hooks/TimeProvider";
-import { EncouragementContext } from "../../src/hooks/EncouragementProvider";
+import { TimeContext } from "../../src/option_states/TimeProvider";
+import { EncouragementContext } from "../../src/option_states/EncouragementProvider";
 import HideableView from "../../src/components/HideableView";
 import { useSoundEffects } from "../../src/hooks/useSoundEffects";
 import Confetti from "../../src/components/Confetti";
+import { VictoryContext } from "../../src/option_states/victoryOptionProvider";
+import { SoundContext } from "../../src/option_states/soundOptionProvider";
 
 const quoteList = [
     "Why don't you time yourself? No pressure though.",
@@ -36,9 +38,11 @@ const WORK_TEXT = "Break"
 const { playSound } = useSoundEffects()
 
 export default function timer () {
-  const {theme, toggle} = useTheme()
+  const {theme} = useTheme()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
-  const {encouraged, setEncouragement} = useContext(EncouragementContext)
+  const {encouragementOption} = useContext(EncouragementContext)
+  const {victoryOption} = useContext(VictoryContext)
+  const {soundOption} = useContext(SoundContext)
   const [durationSec, setDurationSec] = useState<number>(0)
   const [isSelecting, setSelecting] = useState<boolean>(true)
   const [confetti, setConfetti] = useState<boolean>(false)
@@ -52,7 +56,9 @@ export default function timer () {
   const {totalSecondsLeft, running, progress, start, pause, reset, mode, stateTimeLeft} = usePomodoro({
     durationSec,
     onFinish: () => {
-      playSound("timerWin")
+      if (soundOption) {
+        playSound("timerWin")
+      }
       setConfetti(true)
       setSelecting(true)
       setTimeout(() => {
@@ -62,7 +68,7 @@ export default function timer () {
     workTime,
     breakTime,
     onStateChange: () => {
-      if (mode === "work") playSound("workWin", 0.5)
+      if (soundOption) playSound("workWin", 0.5)
     }
   })
 
@@ -71,7 +77,7 @@ export default function timer () {
 
 
   // 1st state: Victory screen! Woohoo!
-  if (confetti && encouraged) {
+  if (confetti && victoryOption) {
     return (
       <Confetti visible={true}/>
     )
@@ -183,7 +189,7 @@ export default function timer () {
         <StatusBar style={theme.isDark ? 'light' : 'dark'} />
 
         <HideableView
-        visible={encouraged}
+        visible={encouragementOption}
         inputText={encouragement}
         style={styles.header}
         textStyle={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}

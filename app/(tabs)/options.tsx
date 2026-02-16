@@ -1,12 +1,14 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { themes, useTheme } from "../../src/theme/theme";
-import {StyleSheet, Switch, Text, View } from "react-native";
+import {ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
 import {useContext} from "react";
-import { TimeContext } from "../../src/hooks/TimeProvider";
-import { EncouragementContext } from "../../src/hooks/EncouragementProvider";
+import { TimeContext } from "../../src/option_states/TimeProvider";
+import { EncouragementContext } from "../../src/option_states/EncouragementProvider";
+import { VictoryContext } from "../../src/option_states/victoryOptionProvider";
+import { SoundContext } from "../../src/option_states/soundOptionProvider";
 
 export default function options () {
 
@@ -18,54 +20,85 @@ export default function options () {
 function AppInner() {
   const {theme, toggle} = useTheme()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
-  const {encouraged, setEncouragement} = useContext(EncouragementContext)
-  const toggleSwitch = () => setEncouragement(previousState => !previousState)
+  const {encouragementOption, setEncouragementOption} = useContext(EncouragementContext)
+  const {victoryOption, setVictoryOption} = useContext(VictoryContext)
+  const {soundOption, setSoundOption} = useContext(SoundContext)
+
+  const toggleEncouragementSwitch = () => setEncouragementOption(prevState => !prevState)
+  const toggleVictorySwitch = () => setVictoryOption(prevState => !prevState)
+  const toggleSoundSwitch = () => setSoundOption(prevState => !prevState)
+  
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style={theme.isDark ? "light" : "dark"}/>
-      <View style={styles.optionArea}>
-        <Text style={styles.labels}>Dark Mode:</Text>
-        <LightSwitch on={theme.isDark} onToggle={toggle}/>
-      </View>
-      <View style={styles.optionArea}>
-        <Text style={styles.labels}>How long do you want to work before a break?</Text>
-        <Text style={styles.textOnTheSide}>{workTime}</Text>
-        <Slider
-          style={{width: 200, height: 40}}
-          step={1}
-          minimumValue={20}
-          maximumValue={60}
-          minimumTrackTintColor={themes.common.red}
-          maximumTrackTintColor={themes.common.red}
-          value={workTime && +workTime.toFixed(0)}
-          onValueChange={setWorkTime}
-        />
-      </View>
-      <View style={styles.optionArea}>
-        <Text style={styles.labels}>How long do you want your break?</Text>
-        <Text style={styles.textOnTheSide}>{breakTime}</Text>
-        <Slider
-          style={{width: 200, height: 40}}
-          step={1}
-          minimumValue={5}
-          maximumValue={30}
-          minimumTrackTintColor={themes.common.green}
-          maximumTrackTintColor={themes.common.green}
-          value={breakTime && +breakTime.toFixed(0)}
-          onValueChange={setBreakTime}
-        />
-      </View>
-      <View style={styles.optionArea}>
-        <Text style={styles.labels}>Do you want encouragement when using the timer?</Text>
-        <Switch
-          trackColor={{false: '#767577', true: themes.common.green}}
-          thumbColor={'#f4f3f4'}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={encouraged}
-        />
-      </View>
+      <ScrollView>
+        <StatusBar style={theme.isDark ? "light" : "dark"}/>
+        <View>
+          <Text style={styles.subtitle}>Style</Text>
+        </View>
+        <View style={styles.optionArea}>
+          <Text style={styles.labels}>Dark Mode:</Text>
+          <LightSwitch on={theme.isDark} onToggle={toggle}/>
+        </View>
+        <View style={styles.optionArea}>
+          <Text style={styles.labels}>How long do you want to work before a break?</Text>
+          <Text style={styles.textOnTheSide}>{workTime}</Text>
+          <Slider
+            style={{width: 200, height: 40}}
+            step={1}
+            minimumValue={20}
+            maximumValue={60}
+            minimumTrackTintColor={themes.common.red}
+            maximumTrackTintColor={themes.common.red}
+            value={workTime && +workTime.toFixed(0)}
+            onValueChange={setWorkTime}
+          />
+        </View>
+        <View style={styles.optionArea}>
+          <Text style={styles.labels}>How long do you want your break?</Text>
+          <Text style={styles.textOnTheSide}>{breakTime}</Text>
+          <Slider
+            style={{width: 200, height: 40}}
+            step={1}
+            minimumValue={5}
+            maximumValue={30}
+            minimumTrackTintColor={themes.common.green}
+            maximumTrackTintColor={themes.common.green}
+            value={breakTime && +breakTime.toFixed(0)}
+            onValueChange={setBreakTime}
+          />
+        </View>
+        <View style={styles.optionArea}>
+          <Text style={styles.labels}>Do you want encouraging messages when using the timer?</Text>
+          <Switch
+            trackColor={{false: '#767577', true: themes.common.green}}
+            thumbColor={'#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleEncouragementSwitch}
+            value={encouragementOption}
+          />
+        </View>
+        <View style={styles.optionArea}>
+          <Text style={styles.labels}>Do you want a victory screen when the timer runs out?</Text>
+          <Switch
+            trackColor={{false: '#767577', true: themes.common.green}}
+            thumbColor={'#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleVictorySwitch}
+            value={victoryOption}
+          />
+        </View>
+         <View style={styles.optionArea}>
+          <Text style={styles.labels}>Do you want sounds to play?</Text>
+          <Switch
+            trackColor={{false: '#767577', true: themes.common.green}}
+            thumbColor={'#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSoundSwitch}
+            value={soundOption}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -88,6 +121,11 @@ const styles = StyleSheet.create({
   textOnTheSide: {
     paddingLeft: 20,
     fontSize: 18,
+    fontWeight: '400',
+  },
+  subtitle: {
+    paddingLeft: 20,
+    fontSize: 40,
     fontWeight: '400',
   }
 })
