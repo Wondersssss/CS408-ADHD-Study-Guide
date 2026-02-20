@@ -1,13 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Image } from 'expo-image'
-import { StatusBar } from 'expo-status-bar'
 
 
 const index = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.topmessage}>Welcome (name)! What do you want to do?</Text>
+      <Text style={styles.topmessage}>Welcome! What do you want to do?</Text>
       <Image
       style={styles.image}
       source="https://picsum.photos/200/300"

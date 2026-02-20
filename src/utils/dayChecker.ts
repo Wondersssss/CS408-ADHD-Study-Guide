@@ -1,15 +1,21 @@
-export function dayChecker(dateDue: string) {
-    const currentDate = Date.now()
-    const dateParts = dateDue.split('/')
-    console.log("dateParts:", dateParts)
-    const dateDueN = new Date(Number("0" + dateParts[2]), Number("0" + dateParts[1]), Number(dateParts[0]))
-    const dateDueNo = new Date(Number("0" + dateParts[2]), Number("0" + dateParts[1]), Number(dateParts[0])).getTime()
-    console.log("dueDateN", dateDueN)
+export function dayChecker(date: Date, isBar: boolean) {
+    const currentDate = Math.floor(Date.now() / 8.64e+7) // translates the milliseconds into days
+    const toDoDate = Math.floor(date.getTime() / 8.64e+7)
+    const difference = toDoDate - currentDate
 
-    const difference = dateDueNo - currentDate
-    const math = Math.floor(difference / 86400000)
-    console.log(math)
+    console.log("currentDate: ", currentDate, "\n",
+                "toDoDate: ", toDoDate, "\n",
+                "difference: ", difference
+    )
 
-    return (Math.floor(difference / 86400000))
+
+
+    if (difference < 3) {
+        if (difference < 1) {
+            return isBar ? '#ff0000' : '#ffff'
+        }
+        return isBar ? '#f6ff00' : '#000000'
+    }
+    return isBar ? '#ffff' : '#000000'
 }
 

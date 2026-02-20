@@ -1,25 +1,41 @@
 import React from 'react'
 import {Stack} from 'expo-router'
-import { ThemeProvider } from '../src/theme/theme'
-import TimeProvider from '../src/option_states/TimeProvider'
-import EncouragementProvider from '../src/option_states/EncouragementProvider'
-import SoundProvider from '../src/option_states/soundOptionProvider'
-import VictoryProvider from '../src/option_states/victoryOptionProvider'
+import { ThemeProvider, useTheme } from '../src/theme/theme'
+import TimeProvider from '../src/providers/TimeProvider'
+import EncouragementProvider from '../src/providers/EncouragementProvider'
+import SoundProvider from '../src/providers/soundOptionProvider'
+import VictoryProvider from '../src/providers/victoryOptionProvider'
+import { LinearGradient } from 'expo-linear-gradient'
 
-const RootLayout = () => {
+const finalLayout = () => {
   return (
-    <SoundProvider>
-      <TimeProvider>
-        <VictoryProvider>
-          <EncouragementProvider>
-            <Stack screenOptions={{headerShown: false}}>
-              <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-            </Stack>
-          </EncouragementProvider>
-        </VictoryProvider>
-      </TimeProvider>
-    </SoundProvider>
+    <ThemeProvider>
+      {RootLayout()}
+    </ThemeProvider>
   )
 }
 
-export default RootLayout
+
+const RootLayout = () => {
+  const {theme} = useTheme()
+
+  const headerColor = theme.isDark ? '#000000' : '#ffff'
+
+  return (
+      <ThemeProvider>
+        <SoundProvider>
+          <TimeProvider>
+            <VictoryProvider>
+              <EncouragementProvider>
+                <Stack screenOptions={{headerShown: false}}>
+                  <Stack.Screen name="(tabs)" options={{headerShown: false, headerStyle: {backgroundColor: headerColor}}}/>
+                </Stack>
+              </EncouragementProvider>
+            </VictoryProvider>
+          </TimeProvider>
+        </SoundProvider>
+      </ThemeProvider>
+  )
+}
+
+export default finalLayout

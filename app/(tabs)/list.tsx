@@ -6,11 +6,13 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import Checkbox from 'expo-checkbox'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dayChecker } from '../../src/utils/dayChecker'
+import { useSoundEffects } from '../../src/hooks/useSoundEffects'
 
 type toDoType = {
   id: number
   title: string
   time: string
+  dateObject: Date
   isDone: boolean
 }
 
@@ -18,9 +20,10 @@ const AssignmentList = () => {
   const [todos, setToDos] = useState<toDoType[]>([])
   const [toDoText, setToDoText] = useState<string>('')
   const [toDoTime, setToDoTime] = useState<string>('')
-  const [date, setDate] = useState(new Date('1999-01-01')) 
+  const [date, setDate] = useState(new Date()) 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [oldToDos, setOldToDos] = useState<toDoType[]>([])
+  const {playSound} = useSoundEffects()
 
   useEffect(() => {
     const getToDos = async() => {
@@ -66,6 +69,7 @@ const AssignmentList = () => {
           id: Math.random(),
           title: toDoText,
           time: toDoTime,
+          dateObject: date, // only here for the different toDo colours
           isDone: false
         }
         todos.push(newToDo)
@@ -73,12 +77,13 @@ const AssignmentList = () => {
         setOldToDos(todos)
         await AsyncStorage.setItem('todo', JSON.stringify(todos))
         setToDoText('')
-        setToDoTime('')
         Keyboard.dismiss()
+        playSound("toDoAdd", 0.5)
       }
     }
     catch (error) {
       console.log(error)
+      playSound("soundFail")
     }
   }
 
@@ -88,9 +93,11 @@ const AssignmentList = () => {
       await AsyncStorage.setItem('todo', JSON.stringify(newToDos))
       setToDos(newToDos)
       setOldToDos(newToDos)
+      playSound("toDoTrash", 0.5)
     }
     catch (error) {
       console.log(error)
+      playSound("soundFail")
     }
   }
 
@@ -127,30 +134,6 @@ const AssignmentList = () => {
     onSearch(searchQuery)
   }, [searchQuery])
 
-  const viewColor = (todo: toDoType) => {
-    if (!todo.isDone) {
-      if (dayChecker(todo.time) <= 3) {
-        if (dayChecker(todo.time) <= 1) {
-          return '#f17629'
-        }
-        return '#c41e1e'
-      }
-    }
-    return '#fff'
-  }
-
-  const textColor = (todo: toDoType) => {
-    if (!todo.isDone) {
-      if (dayChecker(todo.time) < 3) {
-        return '#c41e1e'
-      }
-      else if (true) {
-        return '#babd1b'
-      }
-    }
-    return '#fff'
-  }
-
   const ToDoItem = ({
     todo,
     deleteToDo,
@@ -160,14 +143,14 @@ const AssignmentList = () => {
     deleteToDo: (id: number) => void,
     handleTodo: (id: number) => void,
   }) => (
-      <View style={[styles.toDoContainer, {backgroundColor: viewColor(todo)}]}>
+      <View style={[styles.toDoContainer, {backgroundColor: dayChecker(todo.dateObject, true)}]}>
           <View style={styles.toDoInfoContainer}>
           <Checkbox value={todo.isDone} color={todo.isDone ? '#4630EB' : undefined} onValueChange={() => {handleTodo(todo.id)}}/>
-          <Text style={[styles.toDoText, {color: textColor(todo)}]}>{todo.title}</Text>
+          <Text style={[styles.toDoText, {color: dayChecker(todo.dateObject, false)}]}>{todo.title}</Text>
           </View>
-          <Text style={[styles.toDoText, {fontWeight: '700', color: textColor(todo), marginRight: 20}]}>{todo.time}</Text>
+          <Text style={[styles.toDoText, {fontWeight: '700', color: dayChecker(todo.dateObject, false), marginRight: 20}]}>{todo.time}</Text>
           <TouchableOpacity onPress={() => {deleteToDo(todo.id)}}>
-          <Ionicons name='trash' size={24} color={'red'}/>
+          <Ionicons name='trash' size={24} color={dayChecker(todo.dateObject, false)}/>
           </TouchableOpacity>
       </View>
   )

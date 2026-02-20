@@ -9,13 +9,13 @@ import { StatusBar } from "expo-status-bar";
 import ProgressButton from "../../src/components/ProgressButton";
 import Controls from "../../src/components/TimerControls";
 import { randomNumberGenerator } from "../../src/utils/randomNumberGenerator";
-import { TimeContext } from "../../src/option_states/TimeProvider";
-import { EncouragementContext } from "../../src/option_states/EncouragementProvider";
+import { TimeContext } from "../../src/providers/TimeProvider";
+import { EncouragementContext } from "../../src/providers/EncouragementProvider";
 import HideableView from "../../src/components/HideableView";
 import { useSoundEffects } from "../../src/hooks/useSoundEffects";
 import Confetti from "../../src/components/Confetti";
-import { VictoryContext } from "../../src/option_states/victoryOptionProvider";
-import { SoundContext } from "../../src/option_states/soundOptionProvider";
+import { VictoryContext } from "../../src/providers/victoryOptionProvider";
+import { SoundContext } from "../../src/providers/soundOptionProvider";
 
 const quoteList = [
     "Why don't you time yourself? No pressure though.",
@@ -223,7 +223,7 @@ export default function timer () {
         <View style={styles.footer}>
           <Pressable
             onPress={() => {
-              reset
+              reset()
               setSelecting(true)
             }}
             style={({pressed}) => [
