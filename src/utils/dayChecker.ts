@@ -3,10 +3,10 @@ export function dayChecker(date: Date, isBar: boolean) {
     const toDoDate = Math.floor(date.getTime() / 8.64e+7)
     const difference = toDoDate - currentDate
 
-    console.log("currentDate: ", currentDate, "\n",
-                "toDoDate: ", toDoDate, "\n",
-                "difference: ", difference
-    )
+    // console.log("currentDate: ", currentDate, "\n",
+    //             "toDoDate: ", toDoDate, "\n",
+    //             "difference: ", difference
+    // )
 
 
 
