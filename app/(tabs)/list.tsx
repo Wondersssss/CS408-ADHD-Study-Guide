@@ -12,7 +12,7 @@ type toDoType = {
   id: number
   title: string
   time: string
-  dateObject: Date
+  dateObject: Date  // only here for the different toDo colours
   isDone: boolean
 }
 
@@ -69,7 +69,7 @@ const AssignmentList = () => {
           id: Math.random(),
           title: toDoText,
           time: toDoTime,
-          dateObject: date, // only here for the different toDo colours
+          dateObject: date,
           isDone: false
         }
         todos.push(newToDo)
@@ -143,15 +143,15 @@ const AssignmentList = () => {
     deleteToDo: (id: number) => void,
     handleTodo: (id: number) => void,
   }) => (
-      <View style={[styles.toDoContainer, {backgroundColor: dayChecker(todo.dateObject, true)}]}>
-          <View style={styles.toDoInfoContainer}>
+      <View style={[styles.toDoContainer, {backgroundColor: dayChecker(todo, true)}]}>
+        <View style={styles.toDoInfoContainer}>
           <Checkbox value={todo.isDone} color={todo.isDone ? '#4630EB' : undefined} onValueChange={() => {handleTodo(todo.id)}}/>
-          <Text style={[styles.toDoText, {color: dayChecker(todo.dateObject, false)}]}>{todo.title}</Text>
-          </View>
-          <Text style={[styles.toDoText, {fontWeight: '700', color: dayChecker(todo.dateObject, false), marginRight: 20}]}>{todo.time}</Text>
-          <TouchableOpacity onPress={() => {deleteToDo(todo.id)}}>
-          <Ionicons name='trash' size={24} color={dayChecker(todo.dateObject, false)}/>
-          </TouchableOpacity>
+          <Text style={[styles.toDoText, {color: dayChecker(todo, false)}]}>{todo.title}</Text>
+        </View>
+        <Text style={[styles.toDoText, {fontWeight: '700', color: dayChecker(todo, false), marginRight: 20}]}>{todo.time}</Text>
+        <TouchableOpacity onPress={() => {deleteToDo(todo.id)}}>
+          <Ionicons name='trash' size={24} color={dayChecker(todo, false)}/>
+        </TouchableOpacity>
       </View>
   )
 

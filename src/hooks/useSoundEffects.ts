@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { setAudioModeAsync, useAudioPlayer } from "expo-audio";
 
-type SoundKey = "workWin" | "timerWin" | "toDoAdd" | "toDoTrash" | "soundFail";
+type SoundKey = "workWin" | "timerWin" | "toDoAdd" | "toDoTrash" | "itemBuy" | "soundFail";
 
 useEffect(() => {
   (async () => {
@@ -16,6 +16,7 @@ export function useSoundEffects(defaultVolume = 1) {
   const timerWin = useAudioPlayer(require("../../sounds/timerWin.mp3"))
   const toDoAdd = useAudioPlayer(require("../../sounds/toDoAdd.wav"))
   const toDoTrash = useAudioPlayer(require("../../sounds/toDoTrash.wav"))
+  const itemBuy = useAudioPlayer(require("../../sounds/soundFail.mp3"))
   const soundFail = useAudioPlayer(require("../../sounds/soundFail.mp3"))
 
   const playSound = useCallback(
@@ -27,13 +28,14 @@ export function useSoundEffects(defaultVolume = 1) {
         sound === "timerWin" ? timerWin :
         sound === "toDoAdd" ? toDoAdd :
         sound === "toDoTrash" ? toDoTrash :
+        sound === "itemBuy" ? itemBuy :
         soundFail
 
       player.volume = v;
       player.seekTo(0)
       player.play()
     },
-    [workWin, timerWin, toDoAdd, toDoTrash, soundFail, defaultVolume]
+    [workWin, timerWin, toDoAdd, toDoTrash, itemBuy, soundFail, defaultVolume]
   )
   return { playSound }
 }
