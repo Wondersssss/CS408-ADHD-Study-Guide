@@ -8,15 +8,22 @@ type toDoType = {
 
 export function dayChecker(todo: toDoType, isBar: boolean) {
     const currentDate = Math.floor(Date.now() / 8.64e+7) // translates the milliseconds into days
-    const toDoDate = Math.floor(todo.dateObject.getTime() / 8.64e+7)
-    const difference = toDoDate - currentDate
+    let toDoDate = todo.dateObject
+
+    //converting due to JSON serialisation for AsyncStorage, CHANGE IF DATE OBJECT IS USED FOR
+    //OTHER STUFF PAST THIS
+    if (typeof toDoDate === "string") {
+        toDoDate = new Date(toDoDate)
+    }
+
+    const toDoDateNo = Math.floor(toDoDate.getTime() / 8.64e+7)
+    
+    const difference = toDoDateNo - currentDate
 
     // console.log("currentDate: ", currentDate, "\n",
     //             "toDoDate: ", toDoDate, "\n",
     //             "difference: ", difference
     // )
-
-
 
     if (difference < 3 && !todo.isDone) {
         if (difference < 1) {

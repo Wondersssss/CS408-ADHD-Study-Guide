@@ -68,7 +68,7 @@ export default function timer () {
     workTime,
     breakTime,
     onStateChange: () => {
-      if (soundOption) playSound("workWin", 0.5)
+      if (soundOption) playSound(mode === "work" ? "workWin" : "breakWin", 0.5)
     }
   })
 
