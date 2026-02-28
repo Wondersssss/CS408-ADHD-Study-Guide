@@ -1,5 +1,5 @@
-import { FlatList, Keyboard, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { Alert, FlatList, Keyboard, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import DateTimePicker from '@react-native-community/datetimepicker'
@@ -7,6 +7,7 @@ import Checkbox from 'expo-checkbox'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dayChecker } from '../../src/utils/dayChecker'
 import { useSoundEffects } from '../../src/hooks/useSoundEffects'
+import { SoundContext } from '../../src/providers/soundOptionProvider'
 
 type toDoType = {
   id: number
@@ -23,6 +24,7 @@ const AssignmentList = () => {
   const [date, setDate] = useState(new Date()) 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [oldToDos, setOldToDos] = useState<toDoType[]>([])
+  const {soundOption} = useContext(SoundContext)
   const {playSound} = useSoundEffects()
 
   useEffect(() => {
@@ -55,14 +57,14 @@ const AssignmentList = () => {
     try {
       const currentDate = new Date()
       if (currentDate > date) {
-        alert("You cannot assign a task in the past, please try again.")
+        Alert.alert("Invalid Date", "You cannot assign a task in the past, please try again.")
       }
       else if (toDoText === "") {
-        alert("Task cannot be empty, please try again.")
+        Alert.alert("Invalid Date", "You cannot make an empty task, please try again.")
       }
       else if (toDoTime === "") {
         // shouldn't occur but will keep it just in case
-        alert("Task needs to have a time, please try again.")
+        Alert.alert("No Time Selected", "Task needs to have a time, please try again.")
       }
       else {
         const newToDo = {
@@ -78,12 +80,12 @@ const AssignmentList = () => {
         await AsyncStorage.setItem('todo', JSON.stringify(todos))
         setToDoText('')
         Keyboard.dismiss()
-        playSound("toDoAdd", 0.5)
+        playSound("toDoAdd", soundOption, 0.5)
       }
     }
     catch (error) {
       console.log(error)
-      playSound("soundFail")
+      playSound("soundFail", soundOption)
     }
   }
 
@@ -93,11 +95,11 @@ const AssignmentList = () => {
       await AsyncStorage.setItem('todo', JSON.stringify(newToDos))
       setToDos(newToDos)
       setOldToDos(newToDos)
-      playSound("toDoTrash", 0.5)
+      playSound("toDoTrash", soundOption, 0.5)
     }
     catch (error) {
       console.log(error)
-      playSound("soundFail")
+      playSound("soundFail", soundOption)
     }
   }
 
@@ -112,6 +114,7 @@ const AssignmentList = () => {
       await AsyncStorage.setItem('todo', JSON.stringify(newToDos))
       setToDos(newToDos)
       setOldToDos(newToDos)
+      playSound("toDoAdd", soundOption, 0.5)
     }
     catch (error) {
       console.log(error)

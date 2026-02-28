@@ -25,8 +25,8 @@ export function dayChecker(todo: toDoType, isBar: boolean) {
     //             "difference: ", difference
     // )
 
-    if (difference < 3 && !todo.isDone) {
-        if (difference < 1) {
+    if (difference <= 3 && !todo.isDone) {
+        if (difference <= 1) {
             return isBar ? '#ff0000' : '#ffff'
         }
         return isBar ? '#f6ff00' : '#000000'

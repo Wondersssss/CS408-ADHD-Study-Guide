@@ -10,7 +10,6 @@ type Props = {
     background: string
     running: boolean
     onPress: () => void
-    onLongPress: () => void
 }
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
@@ -21,8 +20,7 @@ export default function ProgressButton({
     glowColor,
     background,
     running,
-    onPress,
-    onLongPress  
+    onPress
 }: Props) {
     const stroke = 6
     const radius = (size - stroke * 2) / 2
@@ -64,7 +62,6 @@ export default function ProgressButton({
             </Svg>
             <Pressable
                 onPress={onPress}
-                onLongPress={onLongPress}
                 style={({pressed}) => [
                     styles.btn,
                     {

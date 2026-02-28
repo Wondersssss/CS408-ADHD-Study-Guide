@@ -9,9 +9,10 @@ const CurrencyProvider = ({children}) => {
     useEffect(() => {
         const getCurrency = async() => {
             try {
-                const currency = await AsyncStorage.getItem('currency')
-                if (currency !== null) {
-                    setCurrency(JSON.parse(currency))
+                const currencyAsync = await AsyncStorage.getItem('currency')
+                if (currencyAsync !== null) {
+                    setCurrency(Number(JSON.parse(currencyAsync)))
+                    console.log("Currency:", currency)
                 }
             }
             catch (error) {

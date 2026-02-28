@@ -35,7 +35,7 @@ const Controls: React.FC<Props> = ({visible, onPause, onStop}) => {
                 }
             ]}
             >
-                <Text style={[styles.label, {color: "#121217"}]}>Stop</Text>
+                <Text style={[styles.label, {color: "#121217"}]}>Stop (back to selection)</Text>
             </Pressable>
         </View>
     )

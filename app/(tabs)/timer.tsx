@@ -3,7 +3,7 @@ import { useTheme, themes } from "../../src/theme/theme";
 import usePomodoro from "../../src/hooks/usePomodoro";
 import { formatMMSS } from "../../src/utils/format";
 import { LinearGradient } from "expo-linear-gradient";
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View, Animated, Pressable } from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View, Animated, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import ProgressButton from "../../src/components/ProgressButton";
@@ -15,6 +15,7 @@ import HideableView from "../../src/components/HideableView";
 import { useSoundEffects } from "../../src/hooks/useSoundEffects";
 import Confetti from "../../src/components/Confetti";
 import { VictoryContext } from "../../src/providers/victoryOptionProvider";
+import { CurrencyContext } from "../../src/providers/CurrencyProvider";
 import { SoundContext } from "../../src/providers/soundOptionProvider";
 
 const quoteList = [
@@ -42,23 +43,26 @@ export default function timer () {
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
   const {encouragementOption} = useContext(EncouragementContext)
   const {victoryOption} = useContext(VictoryContext)
-  const {soundOption} = useContext(SoundContext)
   const [durationSec, setDurationSec] = useState<number>(0)
+  const [sessionTime, setSessionTime] = useState<number>(0)
   const [isSelecting, setSelecting] = useState<boolean>(true)
   const [confetti, setConfetti] = useState<boolean>(false)
+  const {currency, setCurrency} = useContext(CurrencyContext)
+  const {soundOption} = useContext(SoundContext)
   const scrollX = useRef(new Animated.Value(0)).current
+  let deBugMode: boolean = true
 
-  useEffect(() => {
-    setWorkTime(workTime * 60)
-    setBreakTime(breakTime * 60)
-  }, [setBreakTime, setWorkTime])
+  if (!deBugMode) {
+    useEffect(() => {
+      setWorkTime(workTime * 60)
+      setBreakTime(breakTime * 60)
+    }, [setBreakTime, setWorkTime])
+  }
 
   const {totalSecondsLeft, running, progress, start, pause, reset, mode, stateTimeLeft} = usePomodoro({
     durationSec,
     onFinish: () => {
-      if (soundOption) {
-        playSound("timerWin")
-      }
+      playSound("timerWin", soundOption)
       setConfetti(true)
       setSelecting(true)
       setTimeout(() => {
@@ -68,18 +72,57 @@ export default function timer () {
     workTime,
     breakTime,
     onStateChange: () => {
-      if (soundOption) playSound(mode === "work" ? "workWin" : "breakWin", 0.5)
+      playSound(mode === "work" ? "workWin" : "breakWin", soundOption, 0.5)
     }
   })
 
   const time = useMemo(() => formatMMSS(totalSecondsLeft), [totalSecondsLeft])
   const stateTime = useMemo(() => formatMMSS(stateTimeLeft), [stateTimeLeft])
 
+  const exitPrompt = () => {
+    let pausedInPrompt: boolean = false
+    if (running) {
+      pausedInPrompt = true
+      pause()
+    }
+    Alert.alert("Ending Timer", "Are you sure you want to cancel the timer?", [
+      {
+        text: "Yes",
+        onPress: () => {
+          reset()
+          setSelecting(true)
+        }
+      },
+      {
+        text: "No",
+        onPress: () => {
+          if (pausedInPrompt) {
+            start()
+          }
+        }
+      }
+    ])
+  }
+
+  const pausePrompt = () => {
+    pause()
+    Alert.alert("Pausing", "Are you sure you want to pause the timer?", [
+      {text: "Yes"},
+      {
+        text: "No",
+        onPress: () => {start()}
+      }
+    ])
+  }
+
 
   // 1st state: Victory screen! Woohoo!
   if (confetti && victoryOption) {
+    // useEffect(() => {
+    //   setCurrency(currency + sessionTime)
+    // }, [])
     return (
-      <Confetti visible={true}/>
+      <Confetti/>
     )
   }
 
@@ -133,7 +176,8 @@ export default function timer () {
               )}
               onMomentumScrollEnd={ev => {
                 const index = Math.floor(ev.nativeEvent.contentOffset.x / ITEM_SIZE)
-                setDurationSec(timers[index] * 60)
+                setDurationSec(deBugMode ? timers[index] : timers[index] * 60)
+                setSessionTime(deBugMode ? timers[index] / 60 : timers[index])
               }}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -189,6 +233,13 @@ export default function timer () {
         <StatusBar style={theme.isDark ? 'light' : 'dark'} />
 
         <HideableView
+        visible={deBugMode}
+        inputText="[DEBUG MODE]"
+        style={styles.header}
+        textStyle={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}
+        />
+
+        <HideableView
         visible={encouragementOption}
         inputText={encouragement}
         style={styles.header}
@@ -205,37 +256,19 @@ export default function timer () {
           glowColor={mode === "work" ? themes.common.orange : themes.common.green}
           background={theme.card}
           running={running}
-          onPress={() => (running ? pause() : start())}
-          onLongPress={reset}
+          onPress={() => {
+            if (running) {
+              encouragementOption ? pausePrompt() : pause()
+            }
+            else {
+              start()
+            }
+          }}
           />
           
           <Text style={[styles.title, {color: theme.text, fontSize: 16}]}>{mode === "work" ? BREAK_TEXT : WORK_TEXT}</Text>
 
-          <Controls visible={running} onPause={pause} onStop={reset} />
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={[styles.hint, {color: themes.common.orange}]}>
-            Hold the button to reset.
-          </Text>
-        </View>
-
-        <View style={styles.footer}>
-          <Pressable
-            onPress={() => {
-              reset()
-              setSelecting(true)
-            }}
-            style={({pressed}) => [
-                styles.btn,
-                {
-                    backgroundColor: theme.card,
-                    opacity: pressed ? 0.9 : 1
-                }
-            ]}
-            >
-                <Text style={[styles.label, {color: "#121217"}]}>Select Time (resets timer)</Text>
-          </Pressable>
+          <Controls visible={running} onPause={() => {encouragementOption ? pausePrompt() : pause()}} onStop={exitPrompt} />
         </View>
       </SafeAreaView>
     </LinearGradient>

@@ -7,6 +7,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useTheme } from "../../src/theme/theme"
 import LottieView from "lottie-react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { SoundContext } from "../../src/providers/soundOptionProvider"
 
 type shopItemType = {
   id: number
@@ -23,6 +24,7 @@ const Shop = () => {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const {currency, setCurrency} = useContext(CurrencyContext)
   const {encouragementOption} = useContext(EncouragementContext)
+  const {soundOption} = useContext(SoundContext)
   const {playSound} = useSoundEffects()
   const {theme} = useTheme()
 
@@ -100,13 +102,13 @@ const Shop = () => {
         if (item.id === id) {
           if (item.cost > currency) {
             item.isBought = true
-            playSound("itemBuy", 0.5)
+            playSound("itemBuy", soundOption, 0.5)
           }
           else {
             let alertMessage = encouragementOption ? "You don't have enough currency. You gotta earn some more coins!" :
                                                       "You don't have enough currency for this."
             alert(alertMessage)
-            playSound("soundFail")
+            playSound("soundFail", soundOption)
           }
         }
         return item
