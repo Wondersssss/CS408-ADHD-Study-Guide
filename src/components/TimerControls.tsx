@@ -1,30 +1,14 @@
 import {View, StyleSheet, Pressable, Text} from "react-native"
 import { useTheme } from "../theme/theme"
 type Props = {
-    visible: boolean
-    onPause: () => void
     onStop: () => void
 }
 
-const Controls: React.FC<Props> = ({visible, onPause, onStop}) => {
+const Controls: React.FC<Props> = ({onStop}) => {
     const {theme} = useTheme()
-    if (!visible) return null
 
     return  (
         <View style={styles.row}>
-            <Pressable
-            onPress={onPause}
-            style={({pressed}) => [
-                styles.btn,
-                {
-                    backgroundColor: theme.card,
-                    opacity: pressed ? 0.9 : 1
-                }
-            ]}
-            >
-                <Text style={[styles.label, {color: "#121217"}]}>Pause</Text>
-            </Pressable>
-
             <Pressable
             onPress={onStop}
             style={({pressed}) => [

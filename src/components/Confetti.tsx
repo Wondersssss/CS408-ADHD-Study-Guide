@@ -4,16 +4,23 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { themes, useTheme } from "../theme/theme"
 import { LinearGradient } from "expo-linear-gradient"
 import { StatusBar } from "expo-status-bar"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { CurrencyContext } from "../providers/CurrencyProvider"
+
+type Props = {
+    sessionTime: number
+}
 
 
 const {width, height} = useWindowDimensions()
 const {theme, toggle} = useTheme()
 
-const Confetti: React.FC = () => {
-    const {currency} = useContext(CurrencyContext)
+const Confetti: React.FC<Props> = (sessionTime) => {
+    const {currency, setCurrency} = useContext(CurrencyContext)
 
+    useEffect(() => {
+        setCurrency(currency + sessionTime)
+    }, [])
 
     return (
         <LinearGradient
@@ -24,7 +31,7 @@ const Confetti: React.FC = () => {
             <SafeAreaView>
                 <StatusBar style={theme.isDark ? 'light' : 'dark'} />
                 <View style={styles.view}>
-                    <Text style={styles.title}>You now have {currency} currency! Check the shop!</Text>
+                    <Text style={styles.title}>You now have {currency} currency! Woohoo!</Text>
                 </View>
                 <LottieView
                     autoPlay

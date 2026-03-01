@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { themes, useTheme } from "../../src/theme/theme";
-import {ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import {Alert, Button, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
@@ -10,6 +10,8 @@ import { EncouragementContext } from "../../src/providers/EncouragementProvider"
 import { VictoryContext } from "../../src/providers/victoryOptionProvider";
 import { SoundContext } from "../../src/providers/soundOptionProvider";
 import { LinearGradient } from "expo-linear-gradient";
+import { AggressiveEncouragementContext } from "../../src/providers/AggressiveEncouragementProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function options () {
 
@@ -18,10 +20,12 @@ export default function options () {
   const {encouragementOption, setEncouragementOption} = useContext(EncouragementContext)
   const {victoryOption, setVictoryOption} = useContext(VictoryContext)
   const {soundOption, setSoundOption} = useContext(SoundContext)
+  const {AggressiveEncouragementOption, setAggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
 
   const toggleEncouragementSwitch = () => setEncouragementOption(prevState => !prevState)
   const toggleVictorySwitch = () => setVictoryOption(prevState => !prevState)
   const toggleSoundSwitch = () => setSoundOption(prevState => !prevState)
+  const toggleAggressiveSwitch = () => setAggressiveEncouragementOption(prevState => !prevState)
   
 
   return (
@@ -85,6 +89,16 @@ export default function options () {
         />
       </View>
       <View style={styles.optionArea}>
+        <Text style={[styles.labels, {color:theme.text}]}>Do you want more enforced encouragement?</Text>
+        <Switch
+          trackColor={{false: themes.common.red, true: themes.common.green}}
+          thumbColor={'#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleAggressiveSwitch}
+          value={AggressiveEncouragementOption}
+        />
+      </View>
+      <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>Do you want a victory screen when the timer runs out?</Text>
         <Switch
           trackColor={{false: themes.common.red, true: themes.common.green}}
@@ -138,5 +152,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     paddingVertical: 20,
     marginLeft: -20
-  }
+  },
 })

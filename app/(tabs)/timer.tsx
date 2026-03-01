@@ -17,6 +17,7 @@ import Confetti from "../../src/components/Confetti";
 import { VictoryContext } from "../../src/providers/victoryOptionProvider";
 import { CurrencyContext } from "../../src/providers/CurrencyProvider";
 import { SoundContext } from "../../src/providers/soundOptionProvider";
+import { AggressiveEncouragementContext } from "../../src/providers/AggressiveEncouragementProvider";
 
 const quoteList = [
     "Why don't you time yourself? No pressure though.",
@@ -49,15 +50,14 @@ export default function timer () {
   const [confetti, setConfetti] = useState<boolean>(false)
   const {currency, setCurrency} = useContext(CurrencyContext)
   const {soundOption} = useContext(SoundContext)
+  const {AggressiveEncouragementOption, setAggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
   const scrollX = useRef(new Animated.Value(0)).current
   let deBugMode: boolean = true
 
-  if (!deBugMode) {
-    useEffect(() => {
-      setWorkTime(workTime * 60)
-      setBreakTime(breakTime * 60)
-    }, [setBreakTime, setWorkTime])
-  }
+  useEffect(() => {
+    setWorkTime(deBugMode ? workTime : workTime * 60)
+    setBreakTime(deBugMode ? breakTime : breakTime * 60)
+  }, [setBreakTime, setWorkTime])
 
   const {totalSecondsLeft, running, progress, start, pause, reset, mode, stateTimeLeft} = usePomodoro({
     durationSec,
@@ -118,11 +118,8 @@ export default function timer () {
 
   // 1st state: Victory screen! Woohoo!
   if (confetti && victoryOption) {
-    // useEffect(() => {
-    //   setCurrency(currency + sessionTime)
-    // }, [])
     return (
-      <Confetti/>
+      <Confetti sessionTime={sessionTime}/>
     )
   }
 
@@ -177,7 +174,7 @@ export default function timer () {
               onMomentumScrollEnd={ev => {
                 const index = Math.floor(ev.nativeEvent.contentOffset.x / ITEM_SIZE)
                 setDurationSec(deBugMode ? timers[index] : timers[index] * 60)
-                setSessionTime(deBugMode ? timers[index] / 60 : timers[index])
+                setSessionTime(timers[index])
               }}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -234,7 +231,7 @@ export default function timer () {
 
         <HideableView
         visible={deBugMode}
-        inputText="[DEBUG MODE]"
+        inputText={currency.toString()}
         style={styles.header}
         textStyle={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}
         />
@@ -258,7 +255,7 @@ export default function timer () {
           running={running}
           onPress={() => {
             if (running) {
-              encouragementOption ? pausePrompt() : pause()
+              AggressiveEncouragementOption ? pausePrompt() : pause()
             }
             else {
               start()
@@ -268,7 +265,7 @@ export default function timer () {
           
           <Text style={[styles.title, {color: theme.text, fontSize: 16}]}>{mode === "work" ? BREAK_TEXT : WORK_TEXT}</Text>
 
-          <Controls visible={running} onPause={() => {encouragementOption ? pausePrompt() : pause()}} onStop={exitPrompt} />
+          <Controls onStop={exitPrompt} />
         </View>
       </SafeAreaView>
     </LinearGradient>

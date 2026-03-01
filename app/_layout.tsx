@@ -7,6 +7,7 @@ import SoundProvider from '../src/providers/soundOptionProvider'
 import VictoryProvider from '../src/providers/victoryOptionProvider'
 import CurrencyProvider from '../src/providers/CurrencyProvider'
 import { LinearGradient } from 'expo-linear-gradient'
+import AggressiveEncouragementProvider from '../src/providers/AggressiveEncouragementProvider'
 
 const finalLayout = () => {
   return (
@@ -23,21 +24,23 @@ const RootLayout = () => {
   const headerColor = theme.isDark ? '#000000' : '#ffff'
 
   return (
-      <ThemeProvider>
-        <SoundProvider>
-          <TimeProvider>
-            <VictoryProvider>
-              <EncouragementProvider>
-                <CurrencyProvider>
-                  <Stack screenOptions={{headerShown: false}}>
-                    <Stack.Screen name="(tabs)" options={{headerShown: false, headerStyle: {backgroundColor: headerColor}}}/>
-                  </Stack>
-                </CurrencyProvider>
-              </EncouragementProvider>
-            </VictoryProvider>
-          </TimeProvider>
-        </SoundProvider>
-      </ThemeProvider>
+      <AggressiveEncouragementProvider>
+        <ThemeProvider>
+          <SoundProvider>
+            <TimeProvider>
+              <VictoryProvider>
+                <EncouragementProvider>
+                  <CurrencyProvider>
+                    <Stack screenOptions={{headerShown: false}}>
+                      <Stack.Screen name="(tabs)" options={{headerShown: false, headerStyle: {backgroundColor: headerColor}}}/>
+                    </Stack>
+                  </CurrencyProvider>
+                </EncouragementProvider>
+              </VictoryProvider>
+            </TimeProvider>
+          </SoundProvider>
+        </ThemeProvider>
+      </AggressiveEncouragementProvider>
   )
 }
 
