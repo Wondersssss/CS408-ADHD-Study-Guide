@@ -11,12 +11,12 @@ type Props = {
     sessionTime: number
 }
 
-
 const {width, height} = useWindowDimensions()
-const {theme, toggle} = useTheme()
 
-const Confetti: React.FC<Props> = (sessionTime) => {
+export default function Confetti ({sessionTime} : Props) {
+    const {theme} = useTheme()
     const {currency, setCurrency} = useContext(CurrencyContext)
+
 
     useEffect(() => {
         setCurrency(currency + sessionTime)
@@ -36,7 +36,7 @@ const Confetti: React.FC<Props> = (sessionTime) => {
                 <LottieView
                     autoPlay
                     style={styles.animation}
-                    source={require("../../animations/Confetti.json")}
+                    source={require("../../assets/animations/Confetti.json")}
                     resizeMode="cover"
                 />
             </SafeAreaView>
@@ -64,4 +64,3 @@ const styles = StyleSheet.create({
         height: height,
     }
 })
-export default Confetti

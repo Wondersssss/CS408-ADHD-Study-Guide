@@ -28,7 +28,7 @@ export default function ProgressButton({
 
     const animatedProgress = useDerivedValue(() => 
     withTiming(progress, { duration:300, easing: Easing.out(Easing.cubic)})
-)
+    )   
 
     const circleProps = useAnimatedProps(() => ({
         strokeDashoffset: circumference * (1 - animatedProgress.value),

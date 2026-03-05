@@ -10,7 +10,7 @@ import ProgressButton from "../../src/components/ProgressButton";
 import Controls from "../../src/components/TimerControls";
 import { randomNumberGenerator } from "../../src/utils/randomNumberGenerator";
 import { TimeContext } from "../../src/providers/TimeProvider";
-import { EncouragementContext } from "../../src/providers/EncouragementProvider";
+import { EncouragingLineContext } from "../../src/providers/EncouragingLineProvider";
 import HideableView from "../../src/components/HideableView";
 import { useSoundEffects } from "../../src/hooks/useSoundEffects";
 import Confetti from "../../src/components/Confetti";
@@ -18,6 +18,7 @@ import { VictoryContext } from "../../src/providers/victoryOptionProvider";
 import { CurrencyContext } from "../../src/providers/CurrencyProvider";
 import { SoundContext } from "../../src/providers/soundOptionProvider";
 import { AggressiveEncouragementContext } from "../../src/providers/AggressiveEncouragementProvider";
+import { DebugContext } from "../../src/providers/DebugProvider";
 
 const quoteList = [
     "Why don't you time yourself? No pressure though.",
@@ -42,21 +43,21 @@ const { playSound } = useSoundEffects()
 export default function timer () {
   const {theme} = useTheme()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
-  const {encouragementOption} = useContext(EncouragementContext)
+  const {encouragingLineOption} = useContext(EncouragingLineContext)
   const {victoryOption} = useContext(VictoryContext)
   const [durationSec, setDurationSec] = useState<number>(0)
   const [sessionTime, setSessionTime] = useState<number>(0)
   const [isSelecting, setSelecting] = useState<boolean>(true)
   const [confetti, setConfetti] = useState<boolean>(false)
   const {currency, setCurrency} = useContext(CurrencyContext)
+  const {debugOption} = useContext(DebugContext)
   const {soundOption} = useContext(SoundContext)
   const {AggressiveEncouragementOption, setAggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
   const scrollX = useRef(new Animated.Value(0)).current
-  let deBugMode: boolean = true
 
   useEffect(() => {
-    setWorkTime(deBugMode ? workTime : workTime * 60)
-    setBreakTime(deBugMode ? breakTime : breakTime * 60)
+    setWorkTime(debugOption ? workTime : workTime * 60)
+    setBreakTime(debugOption ? breakTime : breakTime * 60)
   }, [setBreakTime, setWorkTime])
 
   const {totalSecondsLeft, running, progress, start, pause, reset, mode, stateTimeLeft} = usePomodoro({
@@ -128,7 +129,7 @@ export default function timer () {
     const {width, height} = Dimensions.get('window') 
     const timers = [...Array(25).keys()].map((i) => (i === 0 ? 1 : i * 5))
     const ITEM_SIZE = width * 0.38
-    const ITEM_SPACING = (width - ITEM_SIZE) / 1.5
+    const ITEM_SPACING = (width - ITEM_SIZE) / 2
     return (
     <LinearGradient
     colors={theme.bgGradient}
@@ -137,7 +138,11 @@ export default function timer () {
     style={[styles.container, {backgroundColor: theme.bg}]}
     >
       <SafeAreaView style={styles.safe}>
-          <Text style={[styles.title, {fontSize: 24}]}>Please select a time for the session.</Text>
+          <StatusBar style={theme.isDark ? 'light' : 'dark'} />
+          <View style={{alignContent: 'center', alignItems:'center'}}>
+            <Text style={[styles.title, {fontSize: 24, color: theme.text, paddingBottom: 20}]}>Please select a session time.</Text>
+            <Text style={[styles.title, {fontSize: 16, color: theme.text, opacity: 0.5}]}>(Swipe if the text hasn't appeared)</Text>
+          </View>
           <Animated.View
             style={[
               StyleSheet.absoluteFillObject,
@@ -173,7 +178,7 @@ export default function timer () {
               )}
               onMomentumScrollEnd={ev => {
                 const index = Math.floor(ev.nativeEvent.contentOffset.x / ITEM_SIZE)
-                setDurationSec(deBugMode ? timers[index] : timers[index] * 60)
+                setDurationSec(debugOption ? timers[index] : timers[index] * 60)
                 setSessionTime(timers[index])
               }}
               showsHorizontalScrollIndicator={false}
@@ -201,6 +206,7 @@ export default function timer () {
                     <Animated.Text style={[styles.time, {
                       fontSize: 80, 
                       opacity,
+                      color: theme.text,
                       transform: [{
                         scale
                       }]
@@ -230,14 +236,14 @@ export default function timer () {
         <StatusBar style={theme.isDark ? 'light' : 'dark'} />
 
         <HideableView
-        visible={deBugMode}
-        inputText={currency.toString()}
+        visible={debugOption}
+        inputText="[DEBUG MODE]"
         style={styles.header}
         textStyle={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}
         />
 
         <HideableView
-        visible={encouragementOption}
+        visible={encouragingLineOption}
         inputText={encouragement}
         style={styles.header}
         textStyle={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}
@@ -278,14 +284,15 @@ const styles = StyleSheet.create({
   },
   safe: {
     flex: 1,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+    marginTop: 100
   },
   header: {
     paddingTop: 8,
     paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: "center"
+    justifyContent: "center",
   },
   title: {
     fontSize: 10,

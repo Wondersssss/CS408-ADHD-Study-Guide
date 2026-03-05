@@ -6,26 +6,29 @@ import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
 import {useContext} from "react";
 import { TimeContext } from "../../src/providers/TimeProvider";
-import { EncouragementContext } from "../../src/providers/EncouragementProvider";
+import { EncouragingLineContext } from "../../src/providers/EncouragingLineProvider";
 import { VictoryContext } from "../../src/providers/victoryOptionProvider";
 import { SoundContext } from "../../src/providers/soundOptionProvider";
 import { LinearGradient } from "expo-linear-gradient";
 import { AggressiveEncouragementContext } from "../../src/providers/AggressiveEncouragementProvider";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Haptic from 'expo-haptics'
+import { DebugContext } from "../../src/providers/DebugProvider";
 
 export default function options () {
 
   const {theme, toggle} = useTheme()
   const {workTime, setWorkTime, breakTime, setBreakTime} = useContext(TimeContext)
-  const {encouragementOption, setEncouragementOption} = useContext(EncouragementContext)
+  const {encouragingLineOption, setEncouragingLineOption} = useContext(EncouragingLineContext)
   const {victoryOption, setVictoryOption} = useContext(VictoryContext)
   const {soundOption, setSoundOption} = useContext(SoundContext)
   const {AggressiveEncouragementOption, setAggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
+  const {debugOption, setdebugOption} = useContext(DebugContext)
 
-  const toggleEncouragementSwitch = () => setEncouragementOption(prevState => !prevState)
-  const toggleVictorySwitch = () => setVictoryOption(prevState => !prevState)
-  const toggleSoundSwitch = () => setSoundOption(prevState => !prevState)
-  const toggleAggressiveSwitch = () => setAggressiveEncouragementOption(prevState => !prevState)
+  const toggleEncouragementSwitch = () => {setEncouragingLineOption(prevState => !prevState); Haptic.selectionAsync()}
+  const toggleVictorySwitch = () => {setVictoryOption(prevState => !prevState); Haptic.selectionAsync()}
+  const toggleSoundSwitch = () => {setSoundOption(prevState => !prevState); Haptic.selectionAsync()}
+  const toggleAggressiveSwitch = () => {setAggressiveEncouragementOption(prevState => !prevState); Haptic.selectionAsync()}
+  const toggleDebugSwitch = () => {setdebugOption(prevState => !prevState); Haptic.selectionAsync()}
   
 
   return (
@@ -85,11 +88,11 @@ export default function options () {
           thumbColor={'#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={toggleEncouragementSwitch}
-          value={encouragementOption}
+          value={encouragingLineOption}
         />
       </View>
       <View style={styles.optionArea}>
-        <Text style={[styles.labels, {color:theme.text}]}>Do you want more enforced encouragement?</Text>
+        <Text style={[styles.labels, {color:theme.text}]}>Do you want a more aggressive style of encouragement?</Text>
         <Switch
           trackColor={{false: themes.common.red, true: themes.common.green}}
           thumbColor={'#f4f3f4'}
@@ -99,7 +102,7 @@ export default function options () {
         />
       </View>
       <View style={styles.optionArea}>
-        <Text style={[styles.labels, {color:theme.text}]}>Do you want a victory screen when the timer runs out?</Text>
+        <Text style={[styles.labels, {color:theme.text}]}>Do you want a victory screen when the timer finishes?</Text>
         <Switch
           trackColor={{false: themes.common.red, true: themes.common.green}}
           thumbColor={'#f4f3f4'}
@@ -116,6 +119,16 @@ export default function options () {
           ios_backgroundColor="#3e3e3e"
           onValueChange={toggleSoundSwitch}
           value={soundOption}
+        />
+      </View>
+      <View style={styles.optionArea}>
+        <Text style={[styles.labels, {color:theme.text}]}>Debug Mode</Text>
+        <Switch
+          trackColor={{false: themes.common.red, true: themes.common.green}}
+          thumbColor={'#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleDebugSwitch}
+          value={debugOption}
         />
       </View>
     </ScrollView>

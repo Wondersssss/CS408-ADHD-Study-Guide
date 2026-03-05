@@ -8,6 +8,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dayChecker } from '../../src/utils/dayChecker'
 import { useSoundEffects } from '../../src/hooks/useSoundEffects'
 import { SoundContext } from '../../src/providers/soundOptionProvider'
+import { StatusBar } from 'expo-status-bar'
+import { useTheme } from '../../src/theme/theme'
+import * as Haptics from 'expo-haptics'
 
 type toDoType = {
   id: number
@@ -26,6 +29,7 @@ const AssignmentList = () => {
   const [oldToDos, setOldToDos] = useState<toDoType[]>([])
   const {soundOption} = useContext(SoundContext)
   const {playSound} = useSoundEffects()
+  const {theme} = useTheme()
 
   useEffect(() => {
     const getToDos = async() => {
@@ -80,7 +84,7 @@ const AssignmentList = () => {
         await AsyncStorage.setItem('todo', JSON.stringify(todos))
         setToDoText('')
         Keyboard.dismiss()
-        playSound("toDoAdd", soundOption, 0.5)
+        playSound("toDoAdd", soundOption)
       }
     }
     catch (error) {
@@ -95,7 +99,7 @@ const AssignmentList = () => {
       await AsyncStorage.setItem('todo', JSON.stringify(newToDos))
       setToDos(newToDos)
       setOldToDos(newToDos)
-      playSound("toDoTrash", soundOption, 0.5)
+      playSound("toDoTrash", soundOption)
     }
     catch (error) {
       console.log(error)
@@ -147,12 +151,15 @@ const AssignmentList = () => {
     handleTodo: (id: number) => void,
   }) => (
       <View style={[styles.toDoContainer, {backgroundColor: dayChecker(todo, true)}]}>
-        <View style={styles.toDoInfoContainer}>
+        <View style={[styles.toDoInfoContainer]}>
           <Checkbox value={todo.isDone} color={todo.isDone ? '#4630EB' : undefined} onValueChange={() => {handleTodo(todo.id)}}/>
           <Text style={[styles.toDoText, {color: dayChecker(todo, false)}]}>{todo.title}</Text>
         </View>
         <Text style={[styles.toDoText, {fontWeight: '700', color: dayChecker(todo, false), marginRight: 20}]}>{todo.time}</Text>
-        <TouchableOpacity onPress={() => {deleteToDo(todo.id)}}>
+        <TouchableOpacity onPress={() => {
+          deleteToDo(todo.id)
+          Haptics.selectionAsync()
+          }}>
           <Ionicons name='trash' size={24} color={dayChecker(todo, false)}/>
         </TouchableOpacity>
       </View>
@@ -160,7 +167,8 @@ const AssignmentList = () => {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {backgroundColor: theme.bg}]}>
+      <StatusBar style={theme.isDark ? "light" : "dark"}/>
 
       <View style={styles.searchBar}>
         <Ionicons name='search'size={24} color={'#333'}/> 
@@ -181,7 +189,7 @@ const AssignmentList = () => {
       )}
       />
 
-      <KeyboardAvoidingView style={styles.footer} behavior='padding' keyboardVerticalOffset={100}>
+      <KeyboardAvoidingView style={styles.footer} behavior='padding' keyboardVerticalOffset={5}>
         <TextInput placeholder='Task' value={toDoText} style={styles.newToDoInput} onChangeText={(text) => {setToDoText(text)}}/>
 
         <DateTimePicker
@@ -190,9 +198,13 @@ const AssignmentList = () => {
         mode="date"
         display="default"
         onChange={onDateChange}
+        themeVariant={theme.isDark ? 'dark' : 'light'}
         />
         
-        <TouchableOpacity onPress={() => {addToDo()}} style={styles.addButton}>
+        <TouchableOpacity onPress={() => {
+          addToDo()
+          Haptics.selectionAsync()
+          }} style={styles.addButton}>
           <Ionicons name='add' size={34} color={'#fff'} />
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -203,11 +215,9 @@ const AssignmentList = () => {
 export default AssignmentList
 
 const styles = StyleSheet.create({
-  // TODO: CHANGE COLOURS TO THEMES
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: '#f5f5f5'
   },
   searchBar: {
     flexDirection: "row",
@@ -215,7 +225,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 10,
     gap: 10,
-    marginBottom: 20
+    marginVertical: 20
   },
   searchInput: {
     flex: 1,

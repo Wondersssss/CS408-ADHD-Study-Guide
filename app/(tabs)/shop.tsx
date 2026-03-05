@@ -2,12 +2,13 @@ import { useContext, useEffect, useState } from "react"
 import { useSoundEffects } from "../../src/hooks/useSoundEffects"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { CurrencyContext } from "../../src/providers/CurrencyProvider"
-import { EncouragementContext } from "../../src/providers/EncouragementProvider"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useTheme } from "../../src/theme/theme"
 import LottieView from "lottie-react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { SoundContext } from "../../src/providers/soundOptionProvider"
+import { StatusBar } from "expo-status-bar"
+import { AggressiveEncouragementContext } from "../../src/providers/AggressiveEncouragementProvider"
 
 type shopItemType = {
   id: number
@@ -23,7 +24,7 @@ const Shop = () => {
   const [bought, setBought] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const {currency, setCurrency} = useContext(CurrencyContext)
-  const {encouragementOption} = useContext(EncouragementContext)
+  const {AggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
   const {soundOption} = useContext(SoundContext)
   const {playSound} = useSoundEffects()
   const {theme} = useTheme()
@@ -32,49 +33,49 @@ const Shop = () => {
     {
       id: Math.random(),
       name: "Test",
-      gif_URL: require("../../animations/Confetti.json"),
+      gif_URL: require("../../assets/animations/Confetti.json"),
       cost: 200,
       isBought: false
     },
     {
       id: Math.random(),
       name: "Test",
-      gif_URL: require("../../animations/Confetti.json"),
+      gif_URL: require("../../assets/animations/Confetti.json"),
       cost: 200,
       isBought: false
     },
     {
       id: Math.random(),
       name: "Test",
-      gif_URL: require("../../animations/Confetti.json"),
+      gif_URL: require("../../assets/animations/Confetti.json"),
       cost: 200,
       isBought: false
     },
     {
       id: Math.random(),
       name: "Test",
-      gif_URL: require("../../animations/Confetti.json"),
+      gif_URL: require("../../assets/animations/Confetti.json"),
       cost: 200,
       isBought: false
     },
     {
       id: Math.random(),
       name: "Test",
-      gif_URL: require("../../animations/Confetti.json"),
+      gif_URL: require("../../assets/animations/Confetti.json"),
       cost: 200,
       isBought: false
     },
     {
       id: Math.random(),
       name: "Test",
-      gif_URL: require("../../animations/Confetti.json"),
+      gif_URL: require("../../assets/animations/Confetti.json"),
       cost: 200,
       isBought: false
     },
     {
       id: Math.random(),
       name: "Test",
-      gif_URL: require("../../animations/Confetti.json"),
+      gif_URL: require("../../assets/animations/Confetti.json"),
       cost: 200,
       isBought: false
     },
@@ -105,7 +106,7 @@ const Shop = () => {
             playSound("itemBuy", soundOption, 0.5)
           }
           else {
-            let alertMessage = encouragementOption ? "You don't have enough currency. You gotta earn some more coins!" :
+            let alertMessage = AggressiveEncouragementOption ? "You don't have enough currency. You gotta earn some more coins!" :
                                                       "You don't have enough currency for this."
             alert(alertMessage)
             playSound("soundFail", soundOption)
@@ -166,6 +167,7 @@ const Shop = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style={theme.isDark ? 'light' : 'dark'} />
 
     </SafeAreaView>
   )
