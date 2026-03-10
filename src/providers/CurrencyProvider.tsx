@@ -7,20 +7,20 @@ const CurrencyProvider = ({children}) => {
     const [currency, setCurrency] = useState<number>(0)
 
     useEffect(() => {
-        const getCurrency = async() => {
-            try {
-                const currencyAsync = await AsyncStorage.getItem('currency')
-                if (currencyAsync !== null) {
-                    setCurrency(Number(JSON.parse(currencyAsync)))
-                    console.log("Currency:", currency)
-                }
+    const getCurrency = async () => {
+        try {
+            const CurrencyAsync = await AsyncStorage.getItem("currency")
+
+            if (CurrencyAsync !== null) {
+                setCurrency(Number(CurrencyAsync))
             }
-            catch (error) {
-                console.log(error)
-            }
-        getCurrency()
+        } catch (error) {
+            console.log(error)
         }
-    }, [])
+    }
+
+    getCurrency()
+}, [])
 
     return (
         <CurrencyContext.Provider value={{currency, setCurrency}}>

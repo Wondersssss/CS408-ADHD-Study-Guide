@@ -2,13 +2,14 @@ import { useContext, useEffect, useState } from "react"
 import { useSoundEffects } from "../../src/hooks/useSoundEffects"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { CurrencyContext } from "../../src/providers/CurrencyProvider"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useTheme } from "../../src/theme/theme"
 import LottieView from "lottie-react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { SoundContext } from "../../src/providers/soundOptionProvider"
 import { StatusBar } from "expo-status-bar"
 import { AggressiveEncouragementContext } from "../../src/providers/AggressiveEncouragementProvider"
+import { LinearGradient } from "expo-linear-gradient"
 
 type shopItemType = {
   id: number
@@ -103,7 +104,7 @@ const Shop = () => {
         if (item.id === id) {
           if (item.cost > currency) {
             item.isBought = true
-            playSound("itemBuy", soundOption, 0.5)
+            playSound("toDoAdd", soundOption, 0.5)
           }
           else {
             let alertMessage = AggressiveEncouragementOption ? "You don't have enough currency. You gotta earn some more coins!" :
@@ -124,23 +125,7 @@ const Shop = () => {
     }
   } 
 
-  const onSearch = (query: string) => {
-    if (query == '') {
-      setItems(oldItems)
-    }
-    else {
-      const filteredItems = items.filter((item) => 
-        item.name.toLowerCase().includes(query.toLowerCase())
-      )
-      setItems(filteredItems)
-    }
-  }
-
-  useEffect(() => {
-    onSearch(searchQuery)
-  }, [searchQuery])
-
-  const shopItem = ({
+  const ShopItem = ({
     item,
     buyItem
     } : {
@@ -156,9 +141,9 @@ const Shop = () => {
         source={item.gif_URL}
         loop
         />
-        <Text style={styles.itemText}>{item.cost}</Text>
+        <Text style={[styles.itemText, {color: theme.text}]}>{item.cost}</Text>
         <TouchableOpacity onPress={() => {buyItem(item.id)}}>
-          <Text style={styles.itemText}>Purchase</Text>
+          <Text style={[styles.itemText, {color: theme.text}]}>Purchase</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -166,10 +151,24 @@ const Shop = () => {
 
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-
-    </SafeAreaView>
+    <LinearGradient
+        colors={theme.bgGradient}
+        start={{x: 0.2, y: 0.1}}
+        end={{x: 0.9, y: 1}}
+        style={[styles.container, {backgroundColor: theme.bg}]}
+        >
+      <SafeAreaView style={[styles.container, {backgroundColor: theme.bg}]}>
+        <StatusBar style={theme.isDark ? 'light' : 'dark'} />
+        <FlatList
+        data={[...shopItems]}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({item}) => (
+          <ShopItem item={item} buyItem={buyItem}/>
+        )}
+        scrollEnabled={true}
+        />
+      </SafeAreaView>
+    </LinearGradient>
   )
 
 
@@ -183,16 +182,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   itemContainer: {
-
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 20,
+    borderColor: '#4c0000'
   },
   itemInfoContainer: {
-
+    flexDirection: 'column',
+    gap: 10,
+    alignItems: 'center'
   },
   itemText: {
-
+    fontSize: 16,
   },
   animation: {
-
+    width: 300,
+    height: 300,
   }
 })
 

@@ -11,6 +11,7 @@ import { SoundContext } from '../../src/providers/soundOptionProvider'
 import { StatusBar } from 'expo-status-bar'
 import { useTheme } from '../../src/theme/theme'
 import * as Haptics from 'expo-haptics'
+import { LinearGradient } from 'expo-linear-gradient'
 
 type toDoType = {
   id: number
@@ -167,48 +168,51 @@ const AssignmentList = () => {
 
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: theme.bg}]}>
-      <StatusBar style={theme.isDark ? "light" : "dark"}/>
-
-      <View style={styles.searchBar}>
-        <Ionicons name='search'size={24} color={'#333'}/> 
-        <TextInput 
-        placeholder='Search...' 
-        style={styles.searchInput} 
-        clearButtonMode='always' 
-        value={searchQuery}
-        onChangeText={(text) => setSearchQuery(text)}
+    <LinearGradient
+        colors={theme.bgGradient}
+        start={{x: 0.2, y: 0.1}}
+        end={{x: 0.9, y: 1}}
+        style={[styles.container, {backgroundColor: theme.bg}]}
+        >
+      <SafeAreaView style={[styles.container, {backgroundColor: theme.bg}]}>
+        <StatusBar style={theme.isDark ? "light" : "dark"}/>
+        <View style={styles.searchBar}>
+          <Ionicons name='search'size={24} color={'#333'}/>
+          <TextInput
+          placeholder='Search...'
+          style={styles.searchInput}
+          clearButtonMode='always'
+          value={searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
+          />
+        </View>
+        <FlatList
+        data={[...todos].reverse()}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({item}) => (
+          <ToDoItem todo={item} deleteToDo={deleteToDo} handleTodo={handleDone}/>
+        )}
         />
-      </View>
-
-      <FlatList
-      data={[...todos].reverse()}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({item}) => (
-        <ToDoItem todo={item} deleteToDo={deleteToDo} handleTodo={handleDone}/>
-      )}
-      />
-
-      <KeyboardAvoidingView style={styles.footer} behavior='padding' keyboardVerticalOffset={5}>
-        <TextInput placeholder='Task' value={toDoText} style={styles.newToDoInput} onChangeText={(text) => {setToDoText(text)}}/>
-
-        <DateTimePicker
-        testID="dateTimePicker"
-        value={date}
-        mode="date"
-        display="default"
-        onChange={onDateChange}
-        themeVariant={theme.isDark ? 'dark' : 'light'}
-        />
-        
-        <TouchableOpacity onPress={() => {
-          addToDo()
-          Haptics.selectionAsync()
-          }} style={styles.addButton}>
-          <Ionicons name='add' size={34} color={'#fff'} />
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        <KeyboardAvoidingView style={styles.footer} behavior='padding' keyboardVerticalOffset={5}>
+          <TextInput placeholder='Task' value={toDoText} style={styles.newToDoInput} onChangeText={(text) => {setToDoText(text)}}/>
+          <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+          themeVariant={theme.isDark ? 'dark' : 'light'}
+          />
+      
+          <TouchableOpacity onPress={() => {
+            addToDo()
+            Haptics.selectionAsync()
+            }} style={styles.addButton}>
+            <Ionicons name='add' size={34} color={'#fff'} />
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   )
 }
 

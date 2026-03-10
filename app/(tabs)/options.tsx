@@ -1,6 +1,5 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import { themes, useTheme } from "../../src/theme/theme";
-import {Alert, Button, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import {Alert, Button, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
@@ -13,6 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { AggressiveEncouragementContext } from "../../src/providers/AggressiveEncouragementProvider";
 import * as Haptic from 'expo-haptics'
 import { DebugContext } from "../../src/providers/DebugProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function options () {
 
@@ -24,11 +24,35 @@ export default function options () {
   const {AggressiveEncouragementOption, setAggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
   const {debugOption, setdebugOption} = useContext(DebugContext)
 
-  const toggleEncouragementSwitch = () => {setEncouragingLineOption(prevState => !prevState); Haptic.selectionAsync()}
-  const toggleVictorySwitch = () => {setVictoryOption(prevState => !prevState); Haptic.selectionAsync()}
-  const toggleSoundSwitch = () => {setSoundOption(prevState => !prevState); Haptic.selectionAsync()}
-  const toggleAggressiveSwitch = () => {setAggressiveEncouragementOption(prevState => !prevState); Haptic.selectionAsync()}
-  const toggleDebugSwitch = () => {setdebugOption(prevState => !prevState); Haptic.selectionAsync()}
+  const toggleEncouragingLineSwitch = async() => {
+    setEncouragingLineOption(prevState => !prevState)
+    Haptic.selectionAsync()
+    await AsyncStorage.setItem('encouragingLineOption', JSON.stringify(!encouragingLineOption))
+  }
+
+  const toggleVictorySwitch = async() => {
+    setVictoryOption(prevState => !prevState)
+    Haptic.selectionAsync()
+    await AsyncStorage.setItem('victoryOption', JSON.stringify(!victoryOption))
+  }
+
+  const toggleSoundSwitch = async() => {
+    setSoundOption(prevState => !prevState)
+    Haptic.selectionAsync()
+    await AsyncStorage.setItem('soundOption', JSON.stringify(!soundOption))
+  }
+
+  const toggleAggressiveSwitch = async() => {
+    setAggressiveEncouragementOption(prevState => !prevState)
+    Haptic.selectionAsync()
+    await AsyncStorage.setItem('aggressiveOption', JSON.stringify(!AggressiveEncouragementOption))
+  }
+
+  const toggleDebugSwitch = async() => {
+    setdebugOption(prevState => !prevState)
+    Haptic.selectionAsync()
+    await AsyncStorage.setItem('debugOption', JSON.stringify(debugOption))
+  }
   
 
   return (
@@ -60,8 +84,11 @@ export default function options () {
           maximumValue={60}
           minimumTrackTintColor={themes.common.red}
           maximumTrackTintColor={themes.common.red}
-          value={workTime && +workTime.toFixed(0)}
+          value={workTime && workTime.toFixed(0)}
           onValueChange={setWorkTime}
+          onSlidingComplete={async() => {
+            await AsyncStorage.setItem('workTime', JSON.stringify(workTime))
+          }}
         />
       </View>
       <View style={styles.optionArea}>
@@ -74,8 +101,11 @@ export default function options () {
           maximumValue={30}
           minimumTrackTintColor={themes.common.green}
           maximumTrackTintColor={themes.common.green}
-          value={breakTime && +breakTime.toFixed(0)}
+          value={breakTime && breakTime.toFixed(0)}
           onValueChange={setBreakTime}
+          onSlidingComplete={async() => {
+            await AsyncStorage.setItem('breakTime', JSON.stringify(breakTime))
+          }}
         />
       <View style={styles.subtitleView}>
         <Text style={[styles.subtitle, {color:theme.text}]}>Encouragement/Preference</Text>
@@ -87,7 +117,7 @@ export default function options () {
           trackColor={{false: themes.common.red, true: themes.common.green}}
           thumbColor={'#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleEncouragementSwitch}
+          onValueChange={toggleEncouragingLineSwitch}
           value={encouragingLineOption}
         />
       </View>
@@ -121,6 +151,9 @@ export default function options () {
           value={soundOption}
         />
       </View>
+      <View style={styles.subtitleView}>
+        <Text style={[styles.subtitle, {color:theme.text}]}>Debug</Text>
+      </View>
       <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>Debug Mode</Text>
         <Switch
@@ -130,6 +163,32 @@ export default function options () {
           onValueChange={toggleDebugSwitch}
           value={debugOption}
         />
+      </View>
+      <View style={styles.optionArea}>
+        <Button title="Show all Data" onPress={async() => {
+          let bigString = "AggressiveOption: " + await AsyncStorage.getItem("aggressiveOption") + " type: " + typeof((await AsyncStorage.getItem('aggressiveOption')).valueOf())
+          alert(bigString)
+        }}/>
+      </View>
+      <View style={styles.optionArea}>
+        <Button title="Clear all data" onPress={() => {
+          Alert.alert("Warning", "Are you sure? This cannot be reverted.", [
+            {
+              text: "Yes",
+              onPress: async() => {
+                AsyncStorage.clear()
+                const keys = await AsyncStorage.getAllKeys()
+                if (keys.length === 0) {
+                  Alert.alert("Data Cleared", "All data has been cleared.")
+                }
+                else {
+                  Alert.alert("Error!", "Data was not wiped. This shouldn't happen!")
+                }
+              }
+            },
+            {text: "No"}
+          ])
+        }}/>
       </View>
     </ScrollView>
     </LinearGradient>

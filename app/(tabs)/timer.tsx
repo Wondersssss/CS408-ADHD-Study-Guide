@@ -2,8 +2,9 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme, themes } from "../../src/theme/theme";
 import usePomodoro from "../../src/hooks/usePomodoro";
 import { formatMMSS } from "../../src/utils/format";
+import { formatSELECT } from "../../src/utils/formatSELECT";
 import { LinearGradient } from "expo-linear-gradient";
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View, Animated, Pressable, Alert } from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View, Animated, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import ProgressButton from "../../src/components/ProgressButton";
@@ -19,6 +20,8 @@ import { CurrencyContext } from "../../src/providers/CurrencyProvider";
 import { SoundContext } from "../../src/providers/soundOptionProvider";
 import { AggressiveEncouragementContext } from "../../src/providers/AggressiveEncouragementProvider";
 import { DebugContext } from "../../src/providers/DebugProvider";
+import * as Haptic from 'expo-haptics'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const quoteList = [
     "Why don't you time yourself? No pressure though.",
@@ -52,13 +55,14 @@ export default function timer () {
   const {currency, setCurrency} = useContext(CurrencyContext)
   const {debugOption} = useContext(DebugContext)
   const {soundOption} = useContext(SoundContext)
-  const {AggressiveEncouragementOption, setAggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
+  const {AggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
   const scrollX = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
     setWorkTime(debugOption ? workTime : workTime * 60)
     setBreakTime(debugOption ? breakTime : breakTime * 60)
   }, [setBreakTime, setWorkTime])
+
 
   const {totalSecondsLeft, running, progress, start, pause, reset, mode, stateTimeLeft} = usePomodoro({
     durationSec,
@@ -81,10 +85,12 @@ export default function timer () {
   const stateTime = useMemo(() => formatMMSS(stateTimeLeft), [stateTimeLeft])
 
   const exitPrompt = () => {
+    Haptic.selectionAsync()
     let pausedInPrompt: boolean = false
     if (running) {
       pausedInPrompt = true
       pause()
+      Haptic.selectionAsync()
     }
     Alert.alert("Ending Timer", "Are you sure you want to cancel the timer?", [
       {
@@ -92,6 +98,7 @@ export default function timer () {
         onPress: () => {
           reset()
           setSelecting(true)
+          Haptic.selectionAsync()
         }
       },
       {
@@ -100,6 +107,7 @@ export default function timer () {
           if (pausedInPrompt) {
             start()
           }
+          Haptic.selectionAsync()
         }
       }
     ])
@@ -108,10 +116,13 @@ export default function timer () {
   const pausePrompt = () => {
     pause()
     Alert.alert("Pausing", "Are you sure you want to pause the timer?", [
-      {text: "Yes"},
+      {
+        text: "Yes",
+        onPress: () => {Haptic.selectionAsync()}
+      },
       {
         text: "No",
-        onPress: () => {start()}
+        onPress: () => {start(); Haptic.selectionAsync()}
       }
     ])
   }
@@ -129,7 +140,7 @@ export default function timer () {
     const {width, height} = Dimensions.get('window') 
     const timers = [...Array(25).keys()].map((i) => (i === 0 ? 1 : i * 5))
     const ITEM_SIZE = width * 0.38
-    const ITEM_SPACING = (width - ITEM_SIZE) / 2
+    const ITEM_SPACING = (width - ITEM_SIZE) / 1.85
     return (
     <LinearGradient
     colors={theme.bgGradient}
@@ -142,6 +153,7 @@ export default function timer () {
           <View style={{alignContent: 'center', alignItems:'center'}}>
             <Text style={[styles.title, {fontSize: 24, color: theme.text, paddingBottom: 20}]}>Please select a session time.</Text>
             <Text style={[styles.title, {fontSize: 16, color: theme.text, opacity: 0.5}]}>(Swipe if the text hasn't appeared)</Text>
+            <Text style={[styles.title, {fontSize: 16, color: theme.text, opacity: 0.5, marginTop: 30}]}>format = hr:min</Text>
           </View>
           <Animated.View
             style={[
@@ -153,7 +165,7 @@ export default function timer () {
               },
             ]}>
             <TouchableOpacity
-              onPress={() => {setSelecting(false)}}>
+              onPress={() => {setSelecting(false); Haptic.notificationAsync()}}>
               <View
                 style={styles.saveButton}
               />
@@ -174,10 +186,10 @@ export default function timer () {
               bounces={false}
               onScroll={Animated.event(
                 [{nativeEvent: {contentOffset: {x: scrollX}}}],
-                {useNativeDriver: true}
+                {useNativeDriver: true},
               )}
               onMomentumScrollEnd={ev => {
-                const index = Math.floor(ev.nativeEvent.contentOffset.x / ITEM_SIZE)
+                const index = Math.round(ev.nativeEvent.contentOffset.x / ITEM_SIZE)
                 setDurationSec(debugOption ? timers[index] : timers[index] * 60)
                 setSessionTime(timers[index])
               }}
@@ -204,14 +216,14 @@ export default function timer () {
                 })
                 return <View style={{width: ITEM_SIZE}}>
                     <Animated.Text style={[styles.time, {
-                      fontSize: 80, 
+                      fontSize: 65, 
                       opacity,
                       color: theme.text,
                       transform: [{
                         scale
                       }]
                       }]}>
-                      {item}
+                      {formatSELECT(item)}
                     </Animated.Text>
                   </View>
               }}
@@ -260,6 +272,7 @@ export default function timer () {
           background={theme.card}
           running={running}
           onPress={() => {
+            Haptic.selectionAsync()
             if (running) {
               AggressiveEncouragementOption ? pausePrompt() : pause()
             }
@@ -271,7 +284,7 @@ export default function timer () {
           
           <Text style={[styles.title, {color: theme.text, fontSize: 16}]}>{mode === "work" ? BREAK_TEXT : WORK_TEXT}</Text>
 
-          <Controls onStop={exitPrompt} />
+          <Controls onStop={() => {exitPrompt(); Haptic.selectionAsync()}} />
         </View>
       </SafeAreaView>
     </LinearGradient>

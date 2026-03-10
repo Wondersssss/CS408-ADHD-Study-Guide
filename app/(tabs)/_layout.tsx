@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useTheme } from '../../src/theme/theme'
 
 // temporary tab bar atm but is very functional. I maaaay do React Navigation down the line but shouldn't be necessary
-// considering functionality comes first. A music player should also be here eventually.
+// considering functionality comes first.
 
 const TabLayout = () => {
   const {theme} = useTheme()
