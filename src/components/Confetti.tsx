@@ -15,22 +15,13 @@ type Props = {
 const {width, height} = useWindowDimensions()
 
 
-export default async function Confetti ({sessionTime} : Props) {
+export default function Confetti ({sessionTime} : Props) {
     const {theme} = useTheme()
     const {currency, setCurrency} = useContext(CurrencyContext)
 
     useEffect(() => {
-        const updateCurrency = async() => {
-            try {
-                setCurrency(currency + sessionTime)
-                await AsyncStorage.setItem('currency', currency)
-            }
-            catch (error) {
-                console.log(error)
-            }
-        }
-        updateCurrency()
-    }, [])
+        setCurrency(currency + sessionTime)
+    },[])
     
 
     return (
@@ -42,7 +33,7 @@ export default async function Confetti ({sessionTime} : Props) {
             <SafeAreaView>
                 <StatusBar style={theme.isDark ? 'light' : 'dark'} />
                 <View style={styles.view}>
-                    <Text style={[styles.title, {color: theme.text}]}>You now have {currency} currency! Woohoo!</Text>
+                    <Text style={[styles.title, {color: theme.text}]}>You now have {currency} currency!</Text>
                 </View>
                 <LottieView
                     autoPlay

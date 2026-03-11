@@ -17,7 +17,7 @@ export function useSoundEffects(defaultVolume = 1) {
   const timerWin = useAudioPlayer(require("../../sounds/timerWin.mp3"))
   const toDoAdd = useAudioPlayer(require("../../sounds/toDoAdd.wav"))
   const toDoTrash = useAudioPlayer(require("../../sounds/toDoTrash.wav"))
-  const itemBuy = useAudioPlayer(require("../../sounds/soundFail.mp3"))
+  const itemBuy = useAudioPlayer(require("../../sounds/itemBuy.mp3"))
   const soundFail = useAudioPlayer(require("../../sounds/soundFail.mp3"))
 
   const playSound = useCallback(

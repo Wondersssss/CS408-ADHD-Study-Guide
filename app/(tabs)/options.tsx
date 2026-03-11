@@ -1,9 +1,9 @@
 import { themes, useTheme } from "../../src/theme/theme";
-import {Alert, Button, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import {Alert, Button, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
-import {useContext} from "react";
+import {useContext, useState} from "react";
 import { TimeContext } from "../../src/providers/TimeProvider";
 import { EncouragingLineContext } from "../../src/providers/EncouragingLineProvider";
 import { VictoryContext } from "../../src/providers/victoryOptionProvider";
@@ -13,6 +13,7 @@ import { AggressiveEncouragementContext } from "../../src/providers/AggressiveEn
 import * as Haptic from 'expo-haptics'
 import { DebugContext } from "../../src/providers/DebugProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CurrencyContext } from "../../src/providers/CurrencyProvider";
 
 export default function options () {
 
@@ -23,6 +24,8 @@ export default function options () {
   const {soundOption, setSoundOption} = useContext(SoundContext)
   const {AggressiveEncouragementOption, setAggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
   const {debugOption, setdebugOption} = useContext(DebugContext)
+  const {currency, setCurrency} = useContext(CurrencyContext)
+  const [tempCurrency, setTempCurrency] = useState(-999)
 
   const toggleEncouragingLineSwitch = async() => {
     setEncouragingLineOption(prevState => !prevState)
@@ -52,6 +55,12 @@ export default function options () {
     setdebugOption(prevState => !prevState)
     Haptic.selectionAsync()
     await AsyncStorage.setItem('debugOption', JSON.stringify(debugOption))
+  }
+
+  const toggleCurrency = async(currency) => {
+    setCurrency(currency)
+    Haptic.selectionAsync()
+    await AsyncStorage.setItem('currency', JSON.stringify(currency))
   }
   
 
@@ -165,10 +174,22 @@ export default function options () {
         />
       </View>
       <View style={styles.optionArea}>
-        <Button title="Show all Data" onPress={async() => {
-          let bigString = "AggressiveOption: " + await AsyncStorage.getItem("aggressiveOption") + " type: " + typeof((await AsyncStorage.getItem('aggressiveOption')).valueOf())
+        <Button title="Show Data" onPress={async() => {
+          let bigString = "Currency: " + currency
           alert(bigString)
         }}/>
+      </View>
+      <View style={styles.optionArea}>
+        <Text style={[styles.labels, {color:theme.text}]}>Set Currency</Text>
+        <View style={{flexDirection: 'row', gap: 10}}>
+          <TextInput
+          placeholder="Currency"
+          clearButtonMode="always"
+          value={currency}
+          inputMode="numeric"
+          onChangeText={setTempCurrency}
+           />
+        </View>
       </View>
       <View style={styles.optionArea}>
         <Button title="Clear all data" onPress={() => {

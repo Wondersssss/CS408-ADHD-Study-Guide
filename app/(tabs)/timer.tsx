@@ -66,13 +66,14 @@ export default function timer () {
 
   const {totalSecondsLeft, running, progress, start, pause, reset, mode, stateTimeLeft} = usePomodoro({
     durationSec,
-    onFinish: () => {
+    onFinish: async() => {
       playSound("timerWin", soundOption)
       setConfetti(true)
       setSelecting(true)
       setTimeout(() => {
         setConfetti(false)
       }, 5000)
+      await AsyncStorage.setItem('currency', JSON.stringify(currency + sessionTime))
     }, 
     workTime,
     breakTime,

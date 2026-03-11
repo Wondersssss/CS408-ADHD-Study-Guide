@@ -20,11 +20,6 @@ export function dayChecker(todo: toDoType, isBar: boolean) {
     
     const difference = toDoDateNo - currentDate
 
-    // console.log("currentDate: ", currentDate, "\n",
-    //             "toDoDate: ", toDoDate, "\n",
-    //             "difference: ", difference
-    // )
-
     if (difference <= 3 && !todo.isDone) {
         if (difference <= 1) {
             return isBar ? '#ff0000' : '#ffff'
