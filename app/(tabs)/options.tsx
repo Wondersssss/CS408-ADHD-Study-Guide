@@ -1,5 +1,5 @@
 import { themes, useTheme } from "../../src/theme/theme";
-import {Alert, Button, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {Alert, Button, KeyboardAvoidingView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
@@ -14,6 +14,7 @@ import * as Haptic from 'expo-haptics'
 import { DebugContext } from "../../src/providers/DebugProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CurrencyContext } from "../../src/providers/CurrencyProvider";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function options () {
 
@@ -25,7 +26,7 @@ export default function options () {
   const {AggressiveEncouragementOption, setAggressiveEncouragementOption} = useContext(AggressiveEncouragementContext)
   const {debugOption, setdebugOption} = useContext(DebugContext)
   const {currency, setCurrency} = useContext(CurrencyContext)
-  const [tempCurrency, setTempCurrency] = useState(-999)
+  const [number, onChangeNumber] = useState('')
 
   const toggleEncouragingLineSwitch = async() => {
     setEncouragingLineOption(prevState => !prevState)
@@ -57,7 +58,7 @@ export default function options () {
     await AsyncStorage.setItem('debugOption', JSON.stringify(debugOption))
   }
 
-  const toggleCurrency = async(currency) => {
+  const toggleCurrency = async(currency: number) => {
     setCurrency(currency)
     Haptic.selectionAsync()
     await AsyncStorage.setItem('currency', JSON.stringify(currency))
@@ -182,13 +183,21 @@ export default function options () {
       <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>Set Currency</Text>
         <View style={{flexDirection: 'row', gap: 10}}>
-          <TextInput
-          placeholder="Currency"
-          clearButtonMode="always"
-          value={currency}
-          inputMode="numeric"
-          onChangeText={setTempCurrency}
-           />
+          <KeyboardAvoidingView style={styles.inputBar} behavior="padding" keyboardVerticalOffset={5}>
+            <TextInput
+            placeholder="Currency"
+            clearButtonMode="always"
+            value={currency}
+            inputMode="numeric"
+            onChangeText={onChangeNumber}
+             />
+          
+          <TouchableOpacity onPress={() => {
+            toggleCurrency(Number(number))
+          }} style={styles.submitButton}>
+            <Ionicons name='add' size={34} color={'#fff'} />
+          </TouchableOpacity>
+          </KeyboardAvoidingView>
         </View>
       </View>
       <View style={styles.optionArea}>
@@ -246,4 +255,15 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     marginLeft: -20
   },
+  inputBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  submitButton: {
+    backgroundColor: '#001eff',
+    padding: 8,
+    borderRadius: 10,
+    marginLeft: 28
+  }
 })

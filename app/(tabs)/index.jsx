@@ -1,18 +1,24 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Image } from 'expo-image'
+import { useTheme } from '../../src/theme/theme'
+import { LinearGradient } from 'expo-linear-gradient'
 
 
 const index = () => {
+  const {theme} = useTheme()
+
+
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.topmessage}>Welcome! What do you want to do?</Text>
-      <Image
-      style={styles.image}
-      source="https://picsum.photos/200/300"
-      contentFit='cover'
-      />
-    </View>
+    <LinearGradient
+    colors={theme.bgGradient}
+    start={{x: 0.2, y: 0.1}}
+    end={{x: 0.9, y: 1}}
+    style={[styles.container, {backgroundColor: theme.bg}]}
+    >
+      
+    </LinearGradient>
   )
 }
 
