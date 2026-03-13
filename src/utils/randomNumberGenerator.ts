@@ -1,4 +1,4 @@
-export function randomNumberGenerator (arr : Array<String>) {
+export function randomNumberGenerator (arr : Array<any>) {
     return (Math.floor(Math.random() * arr.length))
 }
 

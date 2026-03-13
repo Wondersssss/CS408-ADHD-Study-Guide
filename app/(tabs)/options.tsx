@@ -161,7 +161,7 @@ export default function options () {
           value={soundOption}
         />
       </View>
-      <View style={styles.subtitleView}>
+      {/* <View style={styles.subtitleView}>
         <Text style={[styles.subtitle, {color:theme.text}]}>Debug</Text>
       </View>
       <View style={styles.optionArea}>
@@ -173,14 +173,19 @@ export default function options () {
           onValueChange={toggleDebugSwitch}
           value={debugOption}
         />
-      </View>
-      <View style={styles.optionArea}>
+      </View> */}
+      {/* <View style={styles.optionArea}>
         <Button title="Show Data" onPress={async() => {
-          let bigString = "Currency: " + currency
+          let bigString = ""
+
+          for (let i = 1; i < 6; i++) {
+            bigString += `Item ${i}: ` + await AsyncStorage.getItem(`item_${i}`) + "\n"
+          }
+
           alert(bigString)
         }}/>
-      </View>
-      <View style={styles.optionArea}>
+      </View> */}
+      {/* <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>Set Currency</Text>
         <View style={{flexDirection: 'row', gap: 10}}>
           <KeyboardAvoidingView style={styles.inputBar} behavior="padding" keyboardVerticalOffset={5}>
@@ -199,7 +204,7 @@ export default function options () {
           </TouchableOpacity>
           </KeyboardAvoidingView>
         </View>
-      </View>
+      </View> */}
       <View style={styles.optionArea}>
         <Button title="Clear all data" onPress={() => {
           Alert.alert("Warning", "Are you sure? This cannot be reverted.", [

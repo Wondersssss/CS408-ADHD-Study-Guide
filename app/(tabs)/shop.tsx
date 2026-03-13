@@ -108,7 +108,7 @@ const Shop = () => {
           )
         )
         
-        playSound("itemBuy", soundOption, 0.5)
+        playSound("itemBuy", soundOption, 0.3)
         
         await AsyncStorage.setItem("currency", JSON.stringify(newCurrency))
         await AsyncStorage.setItem(`item_${id}`, "true")
@@ -152,9 +152,6 @@ const Shop = () => {
                 },
                 {text: "No", style: "cancel"}
               ])
-            }
-            else {
-              Alert.alert("Info", "You already own this animation!")
             }
           }}
           disabled={item.isBought}
