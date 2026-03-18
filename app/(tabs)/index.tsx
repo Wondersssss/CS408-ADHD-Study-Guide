@@ -6,54 +6,58 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import LottieView from 'lottie-react-native'
 import { AggressiveEncouragementContext } from '../../src/providers/AggressiveEncouragementProvider'
-import { randomNumberGenerator } from '../../src/utils/randomNumberGenerator'
-
-type itemType = {
-  id: Number
-  gif_URL: string
-}
 
 const index = () => {
   const {theme} = useTheme()
   const {AggressiveEncouragementOption, setAggresiveEncouragementOption} = useContext(AggressiveEncouragementContext)
   const [availableItems, setAvailableItems] = useState<number[]>([])
-
-  useEffect(() => {
-    const getAvailableItems = async() => {
-      for (let i = 1; i < 6; i++) {
-      const AsyncItem = await AsyncStorage.getItem(`item_${i}`)
-
-      if (AsyncItem === "true") {
-        setAvailableItems([...availableItems, i])
-      }
-    }
-    }
-    getAvailableItems()
-  }, [])
+  const [randomItemURL, setRandomItemURL] = useState('')
 
 
   const ITEMS = [
     {
-      id: 1,
+      id: 0,
       gif_URL: require("../../assets/animations/Hey.json"),
     },
     {
-      id: 2,
+      id: 1,
       gif_URL: require("../../assets/animations/Home element.json"),
     },
     {
-      id: 3,
+      id: 2,
       gif_URL: require("../../assets/animations/loading.json"),
     },
     {
-      id: 4,
+      id: 3,
       gif_URL: require("../../assets/animations/Spin.json"),
     },
     {
-      id: 5,
+      id: 4,
       gif_URL: require("../../assets/animations/Remix of Our vision.json"),
     },
   ]
+
+  useEffect(() => {
+  const getRandomItem = async () => {
+    const items: number[] = []
+
+    for (let i = 0; i < 5; i++) {
+      const asyncItem = await AsyncStorage.getItem(`item_${i}`)
+      if (asyncItem === "true") {
+        items.push(i)
+      }
+    }
+
+    setAvailableItems(items)
+
+    if (items.length !== 0) {
+      const randomIndex = items[Math.floor(Math.random() * items.length)]
+      setRandomItemURL(ITEMS[randomIndex].gif_URL)
+    }
+  }
+
+  getRandomItem()
+}, [])
 
   const RandomGIF = () => {
     if (availableItems.length === 0) {
@@ -66,9 +70,6 @@ const index = () => {
         <Text style={[styles.title, {color: theme.text, alignContent: "center", fontSize: 16}]}>{message}</Text>
       )
     }
-
-    const randomID = randomNumberGenerator(availableItems)
-    const randomItemURL = ITEMS[randomID].gif_URL
 
     return (
       <LottieView

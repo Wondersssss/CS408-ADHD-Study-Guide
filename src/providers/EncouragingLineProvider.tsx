@@ -6,7 +6,7 @@ export const EncouragingLineContext = createContext(null)
 const EncouragingLineProvider = ({children}) => {
     const [encouragingLineOption, setEncouragingLineOption] = useState<boolean>(true)
 
-     useEffect(() => {
+    useEffect(() => {
     const getAsync = async () => {
         try {
             const Async = await AsyncStorage.getItem("encouragingLineOption")

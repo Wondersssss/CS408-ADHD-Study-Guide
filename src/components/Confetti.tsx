@@ -7,6 +7,7 @@ import { StatusBar } from "expo-status-bar"
 import { useContext, useEffect } from "react"
 import { CurrencyContext } from "../providers/CurrencyProvider"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { Ionicons } from "@expo/vector-icons"
 
 type Props = {
     sessionTime: number
@@ -32,8 +33,10 @@ export default function Confetti ({sessionTime} : Props) {
         style={[styles.container, {backgroundColor: theme.bg}]}>
             <SafeAreaView>
                 <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-                <View style={styles.view}>
-                    <Text style={[styles.title, {color: theme.text}]}>You now have {currency} currency!</Text>
+                <View style={[styles.view, {flexDirection: 'row', marginTop: 40}]}>
+                    <Text style={[styles.title, {color: theme.text}]}>You now have {currency} </Text>
+                    <Ionicons name="cash-outline" size={24} color={theme.text}/>
+                    <Text style={[styles.title, {color: theme.text}]}>!</Text>
                 </View>
                 <LottieView
                     autoPlay

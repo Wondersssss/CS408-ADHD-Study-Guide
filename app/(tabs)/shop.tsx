@@ -23,31 +23,31 @@ type shopItemType = {
 
 const INITIAL_ITEMS: Omit<shopItemType, 'isBought'>[] = [
   {
-    id: 1,
+    id: 0,
     name: "Hey!",
     gif_URL: require("../../assets/animations/Hey.json"),
     cost: 200,
   },
   {
-    id: 2,
+    id: 1,
     name: "Home Element",
     gif_URL: require("../../assets/animations/Home element.json"),
     cost: 200,
   },
   {
-    id: 3,
+    id: 2,
     name: "Infinity",
     gif_URL: require("../../assets/animations/loading.json"),
     cost: 200,
   },
   {
-    id: 4,
+    id: 3,
     name: "180-Style",
     gif_URL: require("../../assets/animations/Spin.json"),
     cost: 200,
   },
   {
-    id: 5,
+    id: 4,
     name: "Our Vision",
     gif_URL: require("../../assets/animations/Remix of Our vision.json"),
     cost: 200,

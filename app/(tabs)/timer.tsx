@@ -149,7 +149,7 @@ export default function timer () {
     end={{x: 0.9, y: 1}}
     style={[styles.container, {backgroundColor: theme.bg}]}
     >
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView style={[styles.safe, {marginTop: 100}]}>
           <StatusBar style={theme.isDark ? 'light' : 'dark'} />
           <View style={{alignContent: 'center', alignItems:'center'}}>
             <Text style={[styles.title, {fontSize: 24, color: theme.text, paddingBottom: 20}]}>Please select a session time.</Text>
@@ -193,6 +193,7 @@ export default function timer () {
                 const index = Math.round(ev.nativeEvent.contentOffset.x / ITEM_SIZE)
                 setDurationSec(debugOption ? timers[index] : timers[index] * 60)
                 setSessionTime(timers[index])
+                playSound('timeSelect', soundOption, 0.5)
               }}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -259,7 +260,9 @@ export default function timer () {
         visible={encouragingLineOption}
         inputText={encouragement}
         style={styles.header}
-        textStyle={[styles.title, {color: theme.text, alignContent: "center", fontSize: 20}]}
+        textStyle={[styles.title, 
+          {color: theme.text, alignContent: "center", alignItems: 'center', fontSize: 20, marginBottom: 20}
+        ]}
         />
         
         <View style={styles.timerWrap}>
@@ -286,6 +289,11 @@ export default function timer () {
           <Text style={[styles.title, {color: theme.text, fontSize: 16}]}>{mode === "work" ? BREAK_TEXT : WORK_TEXT}</Text>
 
           <Controls onStop={() => {exitPrompt(); Haptic.selectionAsync()}} />
+
+          <Text style={[styles.title, 
+            {fontSize: 16, color: theme.text, opacity: 0.5, marginTop: 50, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 50}]}>
+              Want to change the work/break times? See options!
+              </Text>
         </View>
       </SafeAreaView>
     </LinearGradient>
@@ -299,7 +307,8 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: 100
+    marginTop: 50,
+    gap: 10
   },
   header: {
     paddingTop: 8,

@@ -3,7 +3,7 @@ import {Alert, Button, KeyboardAvoidingView, ScrollView, StyleSheet, Switch, Tex
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
-import {useContext, useState} from "react";
+import {useCallback, useContext, useEffect, useState} from "react";
 import { TimeContext } from "../../src/providers/TimeProvider";
 import { EncouragingLineContext } from "../../src/providers/EncouragingLineProvider";
 import { VictoryContext } from "../../src/providers/victoryOptionProvider";
@@ -15,6 +15,9 @@ import { DebugContext } from "../../src/providers/DebugProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CurrencyContext } from "../../src/providers/CurrencyProvider";
 import { Ionicons } from "@expo/vector-icons";
+import * as Updates from 'expo-updates'
+import * as Expo from 'expo'
+import HideableView from "../../src/components/HideableView";
 
 export default function options () {
 
@@ -27,6 +30,8 @@ export default function options () {
   const {debugOption, setdebugOption} = useContext(DebugContext)
   const {currency, setCurrency} = useContext(CurrencyContext)
   const [number, onChangeNumber] = useState('')
+
+  const aggressiveEncouragementDisclaimer = "The aggressive encouragement option will do as follows:\n\n- Further encouragement for insufficient currency funds\n\n- Warning when attempting to pause the timer\n\n- Further encouragement when no animations are bought"
 
   const toggleEncouragingLineSwitch = async() => {
     setEncouragingLineOption(prevState => !prevState)
@@ -63,7 +68,7 @@ export default function options () {
     Haptic.selectionAsync()
     await AsyncStorage.setItem('currency', JSON.stringify(currency))
   }
-  
+
 
   return (
     <LinearGradient
@@ -84,17 +89,24 @@ export default function options () {
       <View style={styles.subtitleView}>
         <Text style={[styles.subtitle, {color:theme.text}]}>Study Times</Text>
       </View>
+
+      <View style={[styles.disclaimerView, {backgroundColor: theme.text, borderRadius: 10}]}>
+        <Text style={{fontSize: 20, color: theme.bg}}>
+          The time ranges for both break and work have been selected to prevent overworking, while also maintaining productivity. The times shown may be inflated, just move them a little.
+          </Text>
+      </View>
+
       <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>How long do you want to work before a break?</Text>
-        <Text style={[styles.textOnTheSide, {color:theme.text}]}>{workTime}</Text>
+        <Text style={[styles.textOnTheSide, {color:theme.text}]}>{workTime} mins</Text>
         <Slider
           style={{width: 200, height: 40}}
           step={1}
           minimumValue={20}
           maximumValue={60}
-          minimumTrackTintColor={themes.common.red}
-          maximumTrackTintColor={themes.common.red}
-          value={workTime && workTime.toFixed(0)}
+          minimumTrackTintColor={theme.text}
+          maximumTrackTintColor={theme.text}
+          value={workTime}
           onValueChange={setWorkTime}
           onSlidingComplete={async() => {
             await AsyncStorage.setItem('workTime', JSON.stringify(workTime))
@@ -103,23 +115,36 @@ export default function options () {
       </View>
       <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>How long do you want your break?</Text>
-        <Text style={[styles.textOnTheSide, {color:theme.text}]}>{breakTime}</Text>
+        <Text style={[styles.textOnTheSide, {color:theme.text}]}>{breakTime} mins</Text>
         <Slider
           style={{width: 200, height: 40}}
           step={1}
           minimumValue={5}
           maximumValue={30}
-          minimumTrackTintColor={themes.common.green}
-          maximumTrackTintColor={themes.common.green}
-          value={breakTime && breakTime.toFixed(0)}
+          minimumTrackTintColor={theme.text}
+          maximumTrackTintColor={theme.text}
+          value={breakTime}
           onValueChange={setBreakTime}
           onSlidingComplete={async() => {
             await AsyncStorage.setItem('breakTime', JSON.stringify(breakTime))
           }}
         />
       <View style={styles.subtitleView}>
-        <Text style={[styles.subtitle, {color:theme.text}]}>Encouragement/Preference</Text>
+        <Text style={[styles.subtitle, {color:theme.text}]}>Encouragement</Text>
       </View>
+      </View>
+      <View style={[styles.disclaimerView, {backgroundColor: theme.text, borderRadius: 10}]}>
+        <Text style={{fontSize: 20, color: theme.bg}}>{aggressiveEncouragementDisclaimer}</Text>
+      </View>
+      <View style={styles.optionArea}>
+        <Text style={[styles.labels, {color:theme.text}]}>Do you want a more aggressive style of encouragement?</Text>
+        <Switch
+          trackColor={{false: themes.common.red, true: themes.common.green}}
+          thumbColor={'#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleAggressiveSwitch}
+          value={AggressiveEncouragementOption}
+        />
       </View>
       <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>Do you want encouraging messages when using the timer?</Text>
@@ -131,15 +156,8 @@ export default function options () {
           value={encouragingLineOption}
         />
       </View>
-      <View style={styles.optionArea}>
-        <Text style={[styles.labels, {color:theme.text}]}>Do you want a more aggressive style of encouragement?</Text>
-        <Switch
-          trackColor={{false: themes.common.red, true: themes.common.green}}
-          thumbColor={'#f4f3f4'}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleAggressiveSwitch}
-          value={AggressiveEncouragementOption}
-        />
+      <View style={styles.subtitleView}>
+        <Text style={[styles.subtitle, {color:theme.text}]}>Preference</Text>
       </View>
       <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>Do you want a victory screen when the timer finishes?</Text>
@@ -161,7 +179,7 @@ export default function options () {
           value={soundOption}
         />
       </View>
-      {/* <View style={styles.subtitleView}>
+      <View style={styles.subtitleView}>
         <Text style={[styles.subtitle, {color:theme.text}]}>Debug</Text>
       </View>
       <View style={styles.optionArea}>
@@ -173,19 +191,19 @@ export default function options () {
           onValueChange={toggleDebugSwitch}
           value={debugOption}
         />
-      </View> */}
+      </View>
       {/* <View style={styles.optionArea}>
         <Button title="Show Data" onPress={async() => {
           let bigString = ""
 
-          for (let i = 1; i < 6; i++) {
+          for (let i = 0; i < 5; i++) {
             bigString += `Item ${i}: ` + await AsyncStorage.getItem(`item_${i}`) + "\n"
           }
 
           alert(bigString)
         }}/>
-      </View> */}
-      {/* <View style={styles.optionArea}>
+      </View>
+      <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>Set Currency</Text>
         <View style={{flexDirection: 'row', gap: 10}}>
           <KeyboardAvoidingView style={styles.inputBar} behavior="padding" keyboardVerticalOffset={5}>
@@ -207,18 +225,12 @@ export default function options () {
       </View> */}
       <View style={styles.optionArea}>
         <Button title="Clear all data" onPress={() => {
-          Alert.alert("Warning", "Are you sure? This cannot be reverted.", [
+          Alert.alert("Warning", "Are you sure? This cannot be reverted. The app will also restart.", [
             {
               text: "Yes",
               onPress: async() => {
                 AsyncStorage.clear()
-                const keys = await AsyncStorage.getAllKeys()
-                if (keys.length === 0) {
-                  Alert.alert("Data Cleared", "All data has been cleared.")
-                }
-                else {
-                  Alert.alert("Error!", "Data was not wiped. This shouldn't happen!")
-                }
+                Expo.reloadAppAsync()
               }
             },
             {text: "No"}
@@ -270,5 +282,12 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 10,
     marginLeft: 28
+  },
+  disclaimerView: {
+    justifyContent: "center", 
+    alignContent: 'center', 
+    marginBottom: 20, 
+    paddingHorizontal: 5,
+    padding: 20
   }
 })
