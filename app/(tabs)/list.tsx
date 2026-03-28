@@ -1,4 +1,4 @@
-import { Alert, FlatList, Keyboard, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, FlatList, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
@@ -31,6 +31,7 @@ const AssignmentList = () => {
   const {soundOption} = useContext(SoundContext)
   const {playSound} = useSoundEffects()
   const {theme} = useTheme()
+  const [showDatePicker, setShowDatePicker] = useState(false)
 
   useEffect(() => {
     const getToDos = async() => {
@@ -166,6 +167,48 @@ const AssignmentList = () => {
       </View>
   )
 
+  const DateTimePlatform = () => {
+    if (Platform.OS === "ios") {
+      return (
+        <View>
+          <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+          themeVariant={theme.isDark ? 'dark' : 'light'}
+          />
+        </View>
+      )
+    }
+    return (
+      <View>
+        <Pressable
+          onPress={() => {setShowDatePicker(true)}}
+          style={({pressed}) => [
+              styles.btn,
+              {
+                  backgroundColor: theme.card,
+                  opacity: pressed ? 0.9 : 1
+              }
+          ]}
+          >
+          <Text style={[styles.label, {color: "#121217"}]}>{date.toDateString()}</Text>
+        </Pressable>
+        {showDatePicker && (
+          <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+          themeVariant={theme.isDark ? 'dark' : 'light'}
+        />)}
+      </View>
+    )
+  }
+
 
   return (
     <LinearGradient
@@ -195,14 +238,7 @@ const AssignmentList = () => {
         />
         <KeyboardAvoidingView style={styles.footer} behavior='padding' keyboardVerticalOffset={5}>
           <TextInput placeholder='Task' value={toDoText} style={styles.newToDoInput} onChangeText={(text) => {setToDoText(text)}}/>
-          <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode="date"
-          display="default"
-          onChange={onDateChange}
-          themeVariant={theme.isDark ? 'dark' : 'light'}
-          />
+          <DateTimePlatform/>
       
           <TouchableOpacity onPress={() => {
             addToDo()
@@ -272,5 +308,20 @@ const styles = StyleSheet.create({
   },
   toDoText: {
     fontSize: 16,
-  }
+  },
+  btn: {
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: {width: 0, height: 6},
+    elevation: 4
+    },
+    label: {
+      fontWeight: '700',
+      letterSpacing: 0.5,
+      fontSize: 14
+    }
 })

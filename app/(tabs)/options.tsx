@@ -179,7 +179,7 @@ export default function options () {
           value={soundOption}
         />
       </View>
-      <View style={styles.subtitleView}>
+      {/* <View style={styles.subtitleView}>
         <Text style={[styles.subtitle, {color:theme.text}]}>Debug</Text>
       </View>
       <View style={styles.optionArea}>
@@ -191,7 +191,7 @@ export default function options () {
           onValueChange={toggleDebugSwitch}
           value={debugOption}
         />
-      </View>
+      </View> */}
       {/* <View style={styles.optionArea}>
         <Button title="Show Data" onPress={async() => {
           let bigString = ""
