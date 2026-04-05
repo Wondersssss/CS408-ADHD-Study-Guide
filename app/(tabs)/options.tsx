@@ -3,7 +3,7 @@ import {Alert, Button, KeyboardAvoidingView, ScrollView, StyleSheet, Switch, Tex
 import { StatusBar } from "expo-status-bar";
 import LightSwitch from "../../src/components/LightSwitch";
 import Slider from "@react-native-community/slider";
-import {useCallback, useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import { TimeContext } from "../../src/providers/TimeProvider";
 import { EncouragingLineContext } from "../../src/providers/EncouragingLineProvider";
 import { VictoryContext } from "../../src/providers/victoryOptionProvider";
@@ -15,10 +15,7 @@ import { DebugContext } from "../../src/providers/DebugProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CurrencyContext } from "../../src/providers/CurrencyProvider";
 import { Ionicons } from "@expo/vector-icons";
-import * as Updates from 'expo-updates'
 import * as Expo from 'expo'
-import HideableView from "../../src/components/HideableView";
-
 export default function options () {
 
   const {theme, toggle} = useTheme()
@@ -69,6 +66,18 @@ export default function options () {
     await AsyncStorage.setItem('currency', JSON.stringify(currency))
   }
 
+  const toggleWorkTime = async(workTime: number) => {
+    if (!debugOption) {setWorkTime(workTime * 60)}
+    Haptic.selectionAsync()
+    await AsyncStorage.setItem('workTime', JSON.stringify(workTime))
+  }
+
+  const toggleBreakTime = async(breakTime: number) => {
+    if (!debugOption) {setBreakTime(breakTime * 60)}
+    Haptic.selectionAsync()
+    await AsyncStorage.setItem('breakTime', JSON.stringify(workTime))
+  }
+
 
   return (
     <LinearGradient
@@ -90,15 +99,15 @@ export default function options () {
         <Text style={[styles.subtitle, {color:theme.text}]}>Study Times</Text>
       </View>
 
-      <View style={[styles.disclaimerView, {backgroundColor: theme.text, borderRadius: 10}]}>
-        <Text style={{fontSize: 20, color: theme.bg}}>
+      <View style={[styles.disclaimerView, {borderRadius: 10}]}>
+        <Text style={{fontSize: 20, color: theme.textMuted}}>
           The time ranges for both break and work have been selected to prevent overworking, while also maintaining productivity. The times shown may be inflated, just move them a little.
           </Text>
       </View>
 
       <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>How long do you want to work before a break?</Text>
-        <Text style={[styles.textOnTheSide, {color:theme.text}]}>{workTime} mins</Text>
+        <Text style={[styles.textOnTheSide, {color:theme.text}]}>{workTime / 60} mins</Text>
         <Slider
           style={{width: 200, height: 40}}
           step={1}
@@ -107,15 +116,12 @@ export default function options () {
           minimumTrackTintColor={theme.text}
           maximumTrackTintColor={theme.text}
           value={workTime}
-          onValueChange={setWorkTime}
-          onSlidingComplete={async() => {
-            await AsyncStorage.setItem('workTime', JSON.stringify(workTime))
-          }}
+          onValueChange={toggleWorkTime}
         />
       </View>
       <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>How long do you want your break?</Text>
-        <Text style={[styles.textOnTheSide, {color:theme.text}]}>{breakTime} mins</Text>
+        <Text style={[styles.textOnTheSide, {color:theme.text}]}>{breakTime / 60} mins</Text>
         <Slider
           style={{width: 200, height: 40}}
           step={1}
@@ -124,17 +130,14 @@ export default function options () {
           minimumTrackTintColor={theme.text}
           maximumTrackTintColor={theme.text}
           value={breakTime}
-          onValueChange={setBreakTime}
-          onSlidingComplete={async() => {
-            await AsyncStorage.setItem('breakTime', JSON.stringify(breakTime))
-          }}
+          onValueChange={toggleBreakTime}
         />
       <View style={styles.subtitleView}>
         <Text style={[styles.subtitle, {color:theme.text}]}>Encouragement</Text>
       </View>
       </View>
-      <View style={[styles.disclaimerView, {backgroundColor: theme.text, borderRadius: 10}]}>
-        <Text style={{fontSize: 20, color: theme.bg}}>{aggressiveEncouragementDisclaimer}</Text>
+      <View style={[styles.disclaimerView, {borderRadius: 10}]}>
+        <Text style={{fontSize: 20, color: theme.textMuted}}>{aggressiveEncouragementDisclaimer}</Text>
       </View>
       <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>Do you want a more aggressive style of encouragement?</Text>
@@ -202,8 +205,8 @@ export default function options () {
 
           alert(bigString)
         }}/>
-      </View>
-      <View style={styles.optionArea}>
+      </View> */}
+      {/* <View style={styles.optionArea}>
         <Text style={[styles.labels, {color:theme.text}]}>Set Currency</Text>
         <View style={{flexDirection: 'row', gap: 10}}>
           <KeyboardAvoidingView style={styles.inputBar} behavior="padding" keyboardVerticalOffset={5}>

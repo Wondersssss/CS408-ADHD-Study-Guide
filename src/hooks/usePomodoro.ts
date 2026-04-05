@@ -27,6 +27,7 @@ export default function usePomodoro({ durationSec, onFinish, workTime, breakTime
                 setTotalSecondsLeft((s) => {
                     const totalNext = clamp(s - 1, 0, durationSec)
                     if (totalNext === 0) {
+                        setMode('work')
                         if (idTotal) clearInterval(idTotal)
                         setRunning(false)
                         onFinish?.()
@@ -75,7 +76,7 @@ export default function usePomodoro({ durationSec, onFinish, workTime, breakTime
     }, [durationSec, mode, workTime, breakTime])
 
     useEffect(() => {
-        setTotalSecondsLeft(durationSec)
+        setTotalSecondsLeft(totalSecondsLeft)
         setStateTimeLeft(mode === "work" ? workTime : breakTime)
         setRunning(false)
     }, [durationSec, workTime, breakTime, mode])

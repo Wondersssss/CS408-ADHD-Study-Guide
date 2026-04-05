@@ -291,9 +291,14 @@ export default function timer () {
           <Controls onStop={() => {exitPrompt(); Haptic.selectionAsync()}} />
 
           <Text style={[styles.title, 
-            {fontSize: 16, color: theme.text, opacity: 0.5, marginTop: 50, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 50}]}>
+            {fontSize: 16, color: theme.text, opacity: 0.5, marginTop: 20, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 50}]}>
               Want to change the work/break times? See options!
               </Text>
+
+          {/* <Text style={[styles.title, 
+            {fontSize: 16, color: theme.text, opacity: 0.5, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 50}]}>
+              If the work/break value is too high, wiggle the slider around in options again. Sorry!
+              </Text> */}
         </View>
       </SafeAreaView>
     </LinearGradient>
